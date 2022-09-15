@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta content="default-src 'self'; script-src 'self'" http-equiv="Content-Security-Policy">
+	<title>rpdl manager</title>
+	<link href="../dist/index.css" rel="stylesheet" type="text/css">
+</head>
+<body class="font-sans">
+	<div class="fixed h-full w-full z-10" id="overlay-bg-login">
+		<div class="bg-cyan-900" id="overlay-login">
+			<h1 class="text-center text-5xl p-3 font-semibold">login</h1>
+
+			<form class="block" id="login-form">
+				<p class="w-full text-center py-2">username</p>
+				<label class="w-full mb-4">
+					<input class="margin-center block w-80 bg-gray-600 px-3 py-1.5 border border-solid border-gray-700 rounded-sm bg-clip-padding ease-in-out focus:outline-none"
+					       name="username" type="text">
+				</label>
+				<p class="w-full text-center py-2">password</p>
+				<label class="w-full mb-4 text-center">
+					<input class="margin-center block w-80 bg-gray-600 px-3 py-1.5 border border-solid border-gray-700 rounded-sm bg-clip-padding ease-in-out focus:outline-none"
+					       name="password" type="password">
+				</label>
+				<br>
+				<button class="block margin-center py-2 bg-cyan-500 p-5 rounded-sm" id="login-button" type="button">
+					login
+				</button>
+			</form>
+
+		</div>
+	</div>
+	<div class="fixed h-full w-full z-10" id="overlay-bg-search" style="display: none;">
+		<div class="bg-cyan-900" id="overlay-search">
+			<h1 class="text-center text-5xl p-3 font-semibold">search</h1>
+
+			<form class="block" id="search-form">
+				<label class="w-full mb-4">
+					<input class="margin-center block w-80 bg-gray-600 px-3 py-1.5 border border-solid border-gray-700 rounded-sm bg-clip-padding ease-in-out focus:outline-none"
+					       id="search-input"
+					       name="search" type="search">
+				</label>
+			</form>
+			<br>
+			<div class="w-full" id="search-results">
+
+			</div>
+		</div>
+
+	</div>
+	<div class="flex">
+		<div class="sidebar">
+			<div class="flex bg-cyan-600" id="sidebar-top">
+				<div class="px-2.5 w-full h-full">
+					<p class="h-full text-3xl text-center">rpdl manager</p>
+				</div>
+			</div>
+			<div class="flex bg-cyan-700 grid grid-rows-1 grid-cols-2" id="sidebar-options">
+				<div class="px-2.5 w-full h-full text-center">
+					<p class="h-full align-middle">search</p>
+				</div>
+				<div class="px-2.5 w-full h-full text-center">
+					<p class="h-full align-middle">filter</p>
+				</div>
+			</div>
+			<div class="bg-cyan-900" id="sidebar">
+				<!--This is where all the links to the games go-->
+			</div>
+		</div>
+		<div class="bg-gray-800" id="main">
+			<p>test</p>
+		</div>
+	</div>
+	<script src="web/index.js"></script>
+</body>
+</html>

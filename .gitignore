@@ -1,0 +1,11 @@
+user.json
+installedGames.json
+activeDownloads.json
+
+torrentDownloads
+torrents
+games
+
+.idea
+dist
+node_modules

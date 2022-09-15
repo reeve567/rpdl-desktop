@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#sidebar-top {
+    height: 3em;
+}
+
+#sidebar-options {
+    height: 2em;
+}
+
+#sidebar {
+    height: calc(100vh - 5em);
+    overflow-y: scroll;
+}
+
+.sidebar {
+    width: 24rem;
+    @apply align-middle;
+}
+
+#main {
+    width: calc(100vw - 24rem);
+    @apply max-h-screen;
+}
+
+#overlay-bg-login {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#overlay-bg-search {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#overlay-login {
+    @apply p-8;
+    margin: 12.5vh 25vw;
+    height: fit-content;
+    width: 50%;
+    border-radius: 1em;
+}
+
+#overlay-search {
+    @apply p-8;
+    margin: 12.5vh 25vw;
+    height: fit-content;
+    width: 50%;
+    border-radius: 1em;
+}
+
+.margin-center {
+    margin: 0 auto;
+}
