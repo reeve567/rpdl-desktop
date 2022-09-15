@@ -31,6 +31,7 @@
 
 #overlay-bg-search {
     background-color: rgba(0, 0, 0, 0.5);
+    display: none;
 }
 
 #overlay-login {

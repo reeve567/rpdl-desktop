@@ -16,10 +16,21 @@ let installedGames = null
 
 const torrentFilesPath = path.join(__dirname, "torrents")
 const torrentDownloadsPath = path.join(__dirname, "torrentDownloads")
-const activeDownloadsPath = path.join(__dirname, "activeDownloads.json")
 const installedGamesPath = path.join(__dirname, "installedGames.json")
 const gamesPath = path.join(__dirname, "games")
 
+
+async function startDownloads() {
+	if (installedGames == null) {
+		installedGames = await getInstalledGames()
+	}
+	
+	installedGames.forEach(game => {
+		if (game.downloading && activeDownloads.indexOf(game.id) === -1) {
+			installGame(game, null)
+		}
+	})
+}
 
 async function installGame(game, old) {
 	if (!fs.existsSync(torrentFilesPath)) {
@@ -30,6 +41,7 @@ async function installGame(game, old) {
 		fs.mkdirSync(torrentDownloadsPath)
 	}
 	
+	activeDownloads.push(game.id)
 	console.log("Deleting old game...")
 	await deleteGame(old)
 	
@@ -120,6 +132,9 @@ async function downloadTorrent(game) {
 			done = true
 			
 			game.downloading = false
+			_.remove(activeDownloads, (id) => {
+				return id === game.id
+			})
 			
 			let ext = torrent.files[0].path.split(".").pop()
 			
@@ -161,5 +176,5 @@ async function getInstalledGames() {
 }
 
 module.exports = {
-	installGame, downloadTorrent, deleteTorrent, deleteGame, getInstalledGames
+	installGame, downloadTorrent, deleteTorrent, deleteGame, getInstalledGames, startDownloads
 }

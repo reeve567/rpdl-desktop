@@ -22,6 +22,10 @@ window.manager.getInstalledGames().then((games) => {
 	})
 })
 
+window.manager.resumeDownloads().then(() => {
+	// done
+})
+
 login.addEventListener("click", async (e) => {
 	e.preventDefault()
 	const username = loginForm.username.value

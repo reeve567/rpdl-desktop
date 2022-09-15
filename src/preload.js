@@ -7,7 +7,8 @@ contextBridge.exposeInMainWorld('manager', {
 	checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),
 	login: (username, password, refreshToken) => ipcRenderer.invoke("login", username, password, refreshToken),
 	search: (query, page) => ipcRenderer.invoke("search", query, page),
-	download: (game, old) => ipcRenderer.invoke("download", game, old)
+	download: (game, old) => ipcRenderer.invoke("download", game, old),
+	resumeDownloads: () => ipcRenderer.invoke("resume-downloads"),
 })
 
 window.addEventListener('DOMContentLoaded', async () => {

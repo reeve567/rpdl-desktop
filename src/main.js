@@ -50,6 +50,10 @@ app.whenReady().then(() => {
 		await tm.installGame(game, old)
 	})
 	
+	ipcMain.handle("resume-downloads", async (event) => {
+		await tm.startDownloads()
+	})
+	
 	tm.getInstalledGames().then(r => {
 		console.log("loaded games")
 	})
