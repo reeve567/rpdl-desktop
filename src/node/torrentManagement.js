@@ -93,7 +93,7 @@ async function downloadTorrent(game) {
 		}
 	}
 	
-	console.log(client.throttleDownload(60_000_000))
+	client.throttleDownload(settings["max-download-speed"])
 	
 	game.downloading = true
 	
@@ -118,9 +118,9 @@ async function downloadTorrent(game) {
 				})
 			}
 			lastBytes += bytes
-			if (lastDate + 1000 < new Date().getTime()) {
+			if (lastDate + 5000 < new Date().getTime()) {
 				console.log("Just downloaded " + lastBytes / 1000000 + " MB")
-				console.log("Download speed is " + lastBytes / 1000000 + " MB/s")
+				console.log("Download speed is " + lastBytes / 5000000 + " MB/s")
 				console.log("Progress is " + torrent.progress + " percent")
 				lastBytes = 0
 				lastDate = new Date().getTime()

@@ -25,6 +25,12 @@
     @apply max-h-screen;
 }
 
+#main-content {
+    /*display: none;*/
+    overflow-y: auto;
+    height: 100%;
+}
+
 #overlay-bg-login {
     background-color: rgba(0, 0, 0, 0.5);
 }
