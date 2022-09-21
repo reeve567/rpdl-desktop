@@ -14,11 +14,10 @@ const getBuffer = bent("buffer")
 const activeDownloads = []
 let installedGames = null
 
-const torrentFilesPath = path.join(__dirname, "torrents")
-const torrentDownloadsPath = path.join(__dirname, "torrentDownloads")
-const installedGamesPath = path.join(__dirname, "installedGames.json")
-const gamesPath = path.join(__dirname, "games")
-
+let torrentFilesPath = path.join("torrents");
+let torrentDownloadsPath = path.join("torrentDownloads")
+let installedGamesPath = path.join("installedGames.json")
+let gamesPath = path.join("games")
 
 async function startDownloads() {
 	if (installedGames == null) {
@@ -60,7 +59,10 @@ async function installGame(game, old) {
 	
 	await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 	
-	game.tags.push(game.new_tags)
+	if (game.new_tags.length > 0) {
+		game.tags.push(game.new_tags)
+	}
+	
 	game.new_tags = []
 	game.tags = _.flatten(game.tags)
 	
@@ -140,6 +142,10 @@ async function downloadTorrent(game) {
 			
 			const gameDir = path.join(gamesPath, "" + game.id)
 			
+			if (!fs.existsSync(gamesPath)) {
+				fs.mkdirSync(gamesPath)
+			}
+			
 			if (!fs.existsSync(gameDir)) {
 				fs.mkdirSync(gameDir)
 			}
@@ -147,6 +153,23 @@ async function downloadTorrent(game) {
 			await fs.promises.rename(torrent.files[0].path, path.join(gameDir, game.torrent_id + "." + ext))
 			await unzip(path.join(gameDir, game.torrent_id + "." + ext), path.join(gameDir, "" + game.torrent_id), err => {
 			
+			})
+			
+			let versionDir = path.join(gameDir, "" + game.torrent_id)
+			
+			await fs.promises.readdir(versionDir, {
+				withFileTypes: true
+			}).then(async (files) => {
+				for (const file of files) {
+					if (file.isDirectory()) {
+						let dir = path.join(versionDir, file.name)
+						for (const file of await fs.promises.readdir(dir)) {
+							await fs.promises.rename(path.join(dir, file), path.join(versionDir, file))
+						}
+						
+						await fs.promises.rmdir(dir)
+					}
+				}
 			})
 			await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 		})

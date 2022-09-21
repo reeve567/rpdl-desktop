@@ -10,17 +10,6 @@ const settings = require("./settings.json")
 
 const querySearch = /[^\[({]*/
 
-function findTorrentFiles() {
-	let files = []
-	fs.readdirSync(torrentFilesPath).forEach((file) => {
-		files.push(file)
-	})
-	
-	return files.filter((file) => {
-		return file.endsWith(".torrent")
-	})
-}
-
 const createWindow = () => {
 	const win = new BrowserWindow({
 		width: 800,
@@ -36,10 +25,6 @@ const createWindow = () => {
 app.whenReady().then(() => {
 	ipcMain.handle("get-installed-games", async (event) => {
 		return await tm.getInstalledGames()
-	})
-	
-	ipcMain.handle("get-game-tags", async (event, game) => {
-		// TODO: get from backend
 	})
 	
 	ipcMain.handle("check-for-updates", async (event) => {
@@ -66,21 +51,21 @@ app.whenReady().then(() => {
 		let andTagString = query.substring(query.indexOf("[") + 1, query.indexOf("]"))
 		let and_tags = andTagString.split(",").map((tag) => {
 			
-			return tag.trim().toLowerCase().replaceAll(/[^a-zA-Z0-9\-. ]/g, "")
+			return tag.trim().toLowerCase()
 		}).filter((tag) => {
 			return tag.length > 0
 		})
 		
 		let orTagString = query.substring(query.indexOf("{") + 1, query.indexOf("}"))
 		let or_tags = orTagString.split(",").map((tag) => {
-			return tag.trim().toLowerCase().replaceAll(/[^a-zA-Z0-9\-. ]/g, "")
+			return tag.trim().toLowerCase()
 		}).filter((tag) => {
 			return tag.length > 0
 		})
 		
 		let notTagString = query.substring(query.indexOf("<") + 1, query.indexOf(">"))
 		let not_tags = notTagString.split(",").map((tag) => {
-			return tag.trim().toLowerCase().replaceAll(/[^a-zA-Z0-9\-. ]/g, "")
+			return tag.trim().toLowerCase()
 		}).filter((tag) => {
 			return tag.length > 0
 		})

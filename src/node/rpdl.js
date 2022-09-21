@@ -12,7 +12,7 @@ const regExp = {
 }
 
 const apiURL = settings.rpdlURL + "api/"
-const userFile = path.join(__dirname, "user.json")
+const userFile = path.join("user.json")
 let user = null
 
 async function findUpdates(installedGames) {

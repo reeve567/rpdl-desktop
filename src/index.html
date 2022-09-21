@@ -38,13 +38,19 @@
 				<label class="w-full mb-4">
 					<input class="margin-center block w-80 bg-gray-600 px-3 py-1.5 border border-solid border-gray-700 rounded-sm bg-clip-padding ease-in-out focus:outline-none"
 					       id="search-input"
-					       name="search" type="search">
+					       name="search"
+					       spellcheck="false"
+					       type="search"
+					>
 				</label>
 			</form>
 			<br>
 			<div class="w-full" id="search-results">
 
 			</div>
+			<a class="w-full text-xl text-center block" id="search-close">
+				Close
+			</a>
 		</div>
 	</div>
 	<div class="flex">
@@ -55,11 +61,12 @@
 				</div>
 			</div>
 			<div class="flex bg-cyan-700 grid grid-rows-1 grid-cols-2" id="sidebar-options">
-				<div class="px-2.5 w-full h-full text-center">
-					<p class="h-full align-middle">search</p>
+				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-r-2 border-b-2"
+				     id="search-button">
+					<p class="h-full align-text-top inline-block">search</p>
 				</div>
-				<div class="px-2.5 w-full h-full text-center">
-					<p class="h-full align-middle">filter</p>
+				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-l-2 border-b-2">
+					<p class="h-full align-text-top inline-block">filter</p>
 				</div>
 			</div>
 			<div class="bg-cyan-900" id="sidebar">
@@ -78,7 +85,7 @@
 			</div>
 		</div>
 	</div>
-	<script src="web/index.js"></script>
 	<script src="web/lodash.js"></script>
+	<script src="web/index.js"></script>
 </body>
 </html>

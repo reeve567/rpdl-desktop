@@ -13,6 +13,7 @@
 #sidebar {
     height: calc(100vh - 5em);
     overflow-y: scroll;
+    overflow-x: clip;
 }
 
 .sidebar {
@@ -50,12 +51,16 @@
 
 #overlay-search {
     @apply p-8;
-    margin: 12.5vh 25vw;
+    margin: 12.5vh 12.5vw;
     height: fit-content;
-    width: 50%;
+    width: 75%;
     border-radius: 1em;
 }
 
 .margin-center {
     margin: 0 auto;
+}
+
+.searchResult {
+    @apply w-full block px-2.5 py-1 bg-cyan-800 m-1
 }

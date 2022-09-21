@@ -8,13 +8,41 @@ const search = document.getElementById("search-input")
 const searchForm = document.getElementById("search-form")
 const searchOverlay = document.getElementById("overlay-bg-search")
 
+const searchButton = document.getElementById("search-button")
+const searchClose = document.getElementById("search-close")
+
 const mainContent = document.getElementById("main-content")
 const gameTitle = document.getElementById("game-title")
 const gameVersion = document.getElementById("game-version")
 const tagDisplay = document.getElementById("tags")
 
-function getGameItem(game) {
-	return `<div class="h-fit flex px-2.5 py-1"><a id="game-${game.id}">${game.title}</a><p class="pl-1 text-gray-500">${game.version}</p></div>`
+let currentGame;
+
+function getGameItem(game, num) {
+	let version
+	let id
+	let otherButtons
+	let type
+	
+	console.log(num)
+	
+	if (num !== undefined) {
+		id = `search-${num}`
+		otherButtons = `<a id="install-${num}" class="float-right inline">Install</a><a id="view-${num}" class="float-right inline pr-2">View</a>`
+		type = "div"
+	} else {
+		id = `installed-${game.id}`
+		otherButtons = ""
+		type = "a"
+	}
+	
+	if (game.version !== "") {
+		version = game.version
+	} else {
+		version = "Final"
+	}
+	
+	return `<${type} id="${id}" class="searchResult">${game.title}<p class="pl-1 text-gray-400 inline">${version}</p>${otherButtons}</${type}>`
 }
 
 function getTag(tag) {
@@ -25,14 +53,30 @@ function getNewTag(tag) {
 	return `<li class="text-gray-400 border-dotted border-2 border-gray-300 px-1 mx-2 my-1">${tag}</li>`
 }
 
-async function openGame(id) {
-	const installedGames = await window.manager.getInstalledGames()
+function openSearch() {
+	searchOverlay.style.display = "block"
+}
+
+function closeSearch() {
+	searchOverlay.style.display = "none"
+}
+
+function updateInstalled() {
+	document.getElementById("sidebar").innerHTML = ""
 	
-	const game = _.find(installedGames, (game) => {
-		return game.id === id
+	window.manager.getInstalledGames().then((games) => {
+		_.forEach(games, (game) => {
+			document.getElementById("sidebar").innerHTML += getGameItem(game)
+			
+			document.getElementById(`installed-${game.id}`).addEventListener("click", () => {
+				openGame(game)
+			})
+		})
 	})
-	
-	if (game == null) return
+}
+
+async function openGame(game) {
+	currentGame = game
 	
 	tagDisplay.innerHTML = ""
 	
@@ -51,8 +95,7 @@ async function openGame(id) {
 		tagDisplay.innerHTML += getNewTag(tag)
 	})
 	
-	let info = await window.manager.getF95Info(game.id)
-	
+	closeSearch()
 	mainContent.style.display = "block"
 }
 
@@ -62,14 +105,50 @@ window.manager.login(null, null, false).then((result) => {
 	}
 })
 
-window.manager.getInstalledGames().then((games) => {
-	Object.values(games).forEach((game) => {
-		document.getElementById("sidebar").innerHTML += getGameItem(game)
-	})
-})
+updateInstalled()
 
 window.manager.resumeDownloads().then(() => {
 	// done
+})
+
+searchButton.addEventListener("click", () => {
+	openSearch()
+})
+
+searchClose.addEventListener("click", () => {
+	closeSearch()
+})
+
+searchForm.addEventListener("submit", async (e) => {
+	e.preventDefault()
+	const query = search.value
+	
+	console.log("searching for", query)
+	
+	window.manager.search(query).then((games) => {
+		console.log("done searching")
+		
+		document.getElementById("search-results").innerHTML = ""
+		
+		for (let i = 0; i < Math.min(12, games.length); i++) {
+			document.getElementById("search-results").innerHTML += getGameItem(games[i], i)
+		}
+		
+		for (let i = 0; i < Math.min(12, games.length); i++) {
+			document.getElementById(`install-${i}`).addEventListener("click", () => {
+				window.manager.download(games[i], null).then(() => {
+				
+				})
+			})
+			
+			document.getElementById(`view-${i}`).addEventListener("click", () => {
+				console.log("clicked")
+				openGame(games[i])
+			})
+		}
+		
+		console.log("done rendering")
+	})
 })
 
 login.addEventListener("click", async (e) => {
@@ -85,23 +164,3 @@ login.addEventListener("click", async (e) => {
 		loginOverlay.style.display = "none"
 	}
 })
-
-searchForm.addEventListener("submit", async (e) => {
-	e.preventDefault()
-	const query = search.value
-	
-	console.log("searching for", query)
-	
-	window.manager.search(query).then((games) => {
-		console.log("done searching")
-
-		document.getElementById("search-results").innerHTML = ""
-		
-		Object.values(games).forEach((game) => {
-			document.getElementById("search-results").innerHTML += getGameItem(game)
-		})
-
-		console.log("done rendering")
-	})
-})
-
