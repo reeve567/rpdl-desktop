@@ -15,6 +15,8 @@ const mainContent = document.getElementById("main-content")
 const gameTitle = document.getElementById("game-title")
 const gameVersion = document.getElementById("game-version")
 const tagDisplay = document.getElementById("tags")
+const descriptionDisplay = document.getElementById("description")
+const linksDisplay = document.getElementById("links")
 
 let currentGame;
 
@@ -23,17 +25,20 @@ function getGameItem(game, num) {
 	let id
 	let otherButtons
 	let type
+	let classes
 	
 	console.log(num)
 	
 	if (num !== undefined) {
 		id = `search-${num}`
-		otherButtons = `<a id="install-${num}" class="float-right inline">Install</a><a id="view-${num}" class="float-right inline pr-2">View</a>`
+		otherButtons = `<a id="install-${num}" class="float-right inline cursor-pointer">Install</a><a id="view-${num}" class="float-right inline pr-2 cursor-pointer">View</a>`
 		type = "div"
+		classes = ""
 	} else {
 		id = `installed-${game.id}`
 		otherButtons = ""
 		type = "a"
+		classes = "cursor-pointer"
 	}
 	
 	if (game.version !== "") {
@@ -42,7 +47,7 @@ function getGameItem(game, num) {
 		version = "Final"
 	}
 	
-	return `<${type} id="${id}" class="searchResult">${game.title}<p class="pl-1 text-gray-400 inline">${version}</p>${otherButtons}</${type}>`
+	return `<${type} id="${id}" class="searchResult ${classes}">${game.title}<p class="pl-1 text-gray-400 inline">${version}</p>${otherButtons}</${type}>`
 }
 
 function getTag(tag) {
@@ -67,7 +72,9 @@ function updateInstalled() {
 	window.manager.getInstalledGames().then((games) => {
 		_.forEach(games, (game) => {
 			document.getElementById("sidebar").innerHTML += getGameItem(game)
-			
+		})
+		
+		_.forEach(games, (game) => {
 			document.getElementById(`installed-${game.id}`).addEventListener("click", () => {
 				openGame(game)
 			})
@@ -94,6 +101,8 @@ async function openGame(game) {
 	_.forEach(game.new_tags, (tag) => {
 		tagDisplay.innerHTML += getNewTag(tag)
 	})
+	
+	descriptionDisplay.innerHTML = game.description
 	
 	closeSearch()
 	mainContent.style.display = "block"

@@ -53,20 +53,20 @@ async function installGame(game, old) {
 	})
 	
 	console.log("Downloading new game...")
-	await downloadTorrent(game)
+	downloadTorrent(game)
 	
 	installedGames.push(game)
 	
 	await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 	
-	if (game.new_tags.length > 0) {
+	if (game.new_tags !== undefined && game.new_tags.length > 0) {
 		game.tags.push(game.new_tags)
 	}
 	
 	game.new_tags = []
 	game.tags = _.flatten(game.tags)
 	
-	console.log("Game installed " + game.torrent_id)
+	console.log("Game installing " + game.torrent_id)
 }
 
 async function downloadTorrent(game) {
@@ -123,7 +123,7 @@ async function downloadTorrent(game) {
 			if (lastDate + 5000 < new Date().getTime()) {
 				console.log("Just downloaded " + lastBytes / 1000000 + " MB")
 				console.log("Download speed is " + lastBytes / 5000000 + " MB/s")
-				console.log("Progress is " + torrent.progress + " percent")
+				console.log("Progress is " + torrent.progress * 100 + " percent")
 				lastBytes = 0
 				lastDate = new Date().getTime()
 			}
@@ -151,27 +151,35 @@ async function downloadTorrent(game) {
 			}
 			
 			await fs.promises.rename(torrent.files[0].path, path.join(gameDir, game.torrent_id + "." + ext))
-			await unzip(path.join(gameDir, game.torrent_id + "." + ext), path.join(gameDir, "" + game.torrent_id), err => {
-			
-			})
-			
 			let versionDir = path.join(gameDir, "" + game.torrent_id)
-			
-			await fs.promises.readdir(versionDir, {
-				withFileTypes: true
-			}).then(async (files) => {
-				for (const file of files) {
-					if (file.isDirectory()) {
-						let dir = path.join(versionDir, file.name)
-						for (const file of await fs.promises.readdir(dir)) {
-							await fs.promises.rename(path.join(dir, file), path.join(versionDir, file))
-						}
-						
-						await fs.promises.rmdir(dir)
-					}
+			if (!fs.existsSync(versionDir)) {
+				fs.mkdirSync(versionDir)
+			}
+
+			await unzip(path.join(gameDir, game.torrent_id + "." + ext), versionDir, async (err) => {
+				if (err != null) {
+					throw err
 				}
+				
+				console.log("Unzipped game")
+				
+				await fs.promises.readdir(versionDir, {
+					withFileTypes: true
+				}).then(async (files) => {
+					for (const file of files) {
+						if (file.isDirectory()) {
+							let dir = path.join(versionDir, file.name)
+							for (const file of await fs.promises.readdir(dir)) {
+								await fs.promises.rename(path.join(dir, file), path.join(versionDir, file))
+							}
+							
+							await fs.promises.rmdir(dir)
+						}
+					}
+				})
+				
+				await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 			})
-			await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 		})
 	})
 }

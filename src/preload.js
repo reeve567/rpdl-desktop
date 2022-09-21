@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld('manager', {
 	search: (query, page) => ipcRenderer.invoke("search", query, page),
 	download: (game, old) => ipcRenderer.invoke("download", game, old),
 	resumeDownloads: () => ipcRenderer.invoke("resume-downloads"),
-	getF95Info: (id) => ipcRenderer.invoke("get-f95-info", id),
+	openURL: (url) => ipcRenderer.invoke("open-url", url),
 })
 
 window.addEventListener('DOMContentLoaded', async () => {

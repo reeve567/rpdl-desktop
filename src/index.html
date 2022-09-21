@@ -48,7 +48,7 @@
 			<div class="w-full" id="search-results">
 
 			</div>
-			<a class="w-full text-xl text-center block" id="search-close">
+			<a class="w-full text-xl text-center block cursor-pointer" id="search-close">
 				Close
 			</a>
 		</div>
@@ -61,11 +61,11 @@
 				</div>
 			</div>
 			<div class="flex bg-cyan-700 grid grid-rows-1 grid-cols-2" id="sidebar-options">
-				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-r-2 border-b-2"
+				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-r-2 border-b-2 cursor-pointer"
 				     id="search-button">
 					<p class="h-full align-text-top inline-block">search</p>
 				</div>
-				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-l-2 border-b-2">
+				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-l-2 border-b-2 cursor-pointer">
 					<p class="h-full align-text-top inline-block">filter</p>
 				</div>
 			</div>
@@ -75,12 +75,49 @@
 		</div>
 		<div class="bg-gray-800" id="main">
 			<div id="main-content">
-				<h1 class="text-center text-5xl text-gray-300" id="game-title">Title</h1>
+				<div class="bg-gray-700 w-full grid grid-rows-1 grid-cols-3">
+					<h1 class="text-gray-300 text-2xl text-center py-4">Install</h1>
+					<h1 class="text-gray-300 text-2xl text-center py-4">Uninstall</h1>
+					<h1 class="text-gray-300 text-2xl text-center py-4">4GB</h1>
+				</div>
+				<h1 class="text-center text-5xl text-gray-300 py-2" id="game-title">Title</h1>
 				<h1 class="text-center text-3xl text-gray-400" id="game-version">Version</h1>
 				<hr class="bg-gray-500 h-0.5 border-none mx-4 my-2">
 				<ul class="flex text-center align-middle justify-center flex-wrap" id="tags">
 					<li class="text-gray-400 border-dotted border-2 border-gray-500 px-1 mx-1 my-1">${tag}</li>
 					<li class="text-gray-400 border-dotted border-2 border-gray-300 px-1 mx-1 my-1">${tag}</li>
+				</ul>
+				<p class="text-gray-400 text-center" id="description">desc</p>
+				<ul class="text-center flex justify-center flex-wrap align-middle" id="links">
+					<li class="text-cyan-300 text-xl px-1 underline decoration-dotted decoration-gray-400 cursor-pointer">
+						<a>Patreon</a>
+					</li>
+				</ul>
+
+
+
+
+				<!-- This is where the game's image goes as a carousel -->
+				<div id="game-carousel" class="carousel slide relative" data-bs-ride="carousel">
+					<div id="indicator" class="carousel-indicators absolute right-0 bottom-0 left-0 flex justify-center p-0 mb-4">
+
+					</div>
+					<div class="carousel-inner relative w-full overflow-hidden">
+						<div>
+
+						</div>
+					</div>
+				</div>
+
+
+
+
+
+
+				<ul class="text-gray-500 text-center" id="settings">
+					<li class="px-1 underline decoration-dotted decoration-dashed decoration-gray-600 cursor-pointer">
+						Open Folder
+					</li>
 				</ul>
 			</div>
 		</div>
