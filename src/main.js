@@ -9,9 +9,10 @@ const json = bent("json", "GET")
 const settings = require("./settings.json")
 
 const querySearch = /[^\[({]*/
+let win
 
 const createWindow = () => {
-	const win = new BrowserWindow({
+	win = new BrowserWindow({
 		width: 1200,
 		height: 800,
 		webPreferences: {
@@ -20,6 +21,14 @@ const createWindow = () => {
 	})
 	
 	win.loadFile("index.html")
+}
+
+function getMainWindow() {
+	return win
+}
+
+module.exports = {
+	getMainWindow
 }
 
 app.whenReady().then(() => {
@@ -37,6 +46,10 @@ app.whenReady().then(() => {
 	
 	ipcMain.handle("download", async (event, game, old) => {
 		await tm.installGame(game, old)
+	})
+	
+	ipcMain.handle("remove", async (event, game) => {
+		await tm.deleteGame(game)
 	})
 	
 	ipcMain.handle("resume-downloads", async (event) => {
@@ -86,7 +99,25 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("open-url", async (event, url) => {
+		// Could make a custom window to pop up for it
 		await require("electron").shell.openExternal(url)
+	})
+	
+	ipcMain.handle("open-path", async (event, path) => {
+		await require("electron").shell.openPath(path)
+	})
+	
+	ipcMain.handle("get-game-folder", async (event, id) => {
+		return path.join(path.join(tm.gamesPath, "" + id))
+	})
+	
+	ipcMain.handle("get-game-executable", async (event, id) => {
+		const gameDir = path.join(tm.gamesPath, "" + id)
+		const installed = await tm.getInstalledGames()
+		const game = installed[id]
+		const version = game.torrent_id
+		const versionDir = path.join(gameDir, "" + version)
+		
 	})
 	
 	tm.getInstalledGames().then(r => {

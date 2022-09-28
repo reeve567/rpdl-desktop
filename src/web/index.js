@@ -17,8 +17,16 @@ const gameVersion = document.getElementById("game-version")
 const tagDisplay = document.getElementById("tags")
 const descriptionDisplay = document.getElementById("description")
 const linksDisplay = document.getElementById("links")
+let installButton = document.getElementById("install-current")
+let uninstallButton = document.getElementById("uninstall-current")
+const sizeDisplay = document.getElementById("size-current")
+let playButton = document.getElementById("play-current")
+const openFolder = document.getElementById("open-folder")
+const progressBar = document.getElementById("progress-bar")
 
-let currentGame;
+let currentGame
+let updateInstallBar
+let updateUninstallBar
 
 function getGameItem(game, num) {
 	let version
@@ -26,8 +34,6 @@ function getGameItem(game, num) {
 	let otherButtons
 	let type
 	let classes
-	
-	console.log(num)
 	
 	if (num !== undefined) {
 		id = `search-${num}`
@@ -58,6 +64,10 @@ function getNewTag(tag) {
 	return `<li class="text-gray-400 border-dotted border-2 border-gray-300 px-1 mx-2 my-1">${tag}</li>`
 }
 
+function getLink(key) {
+	return `<li id="${key}" class="text-cyan-300 text-xl px-1 underline decoration-dotted decoration-gray-400 cursor-pointer"><a>${key}</a></li>`
+}
+
 function openSearch() {
 	searchOverlay.style.display = "block"
 }
@@ -82,6 +92,10 @@ function updateInstalled() {
 	})
 }
 
+function closeGame() {
+	mainContent.style.display = "none"
+}
+
 async function openGame(game) {
 	currentGame = game
 	
@@ -89,10 +103,12 @@ async function openGame(game) {
 	
 	gameTitle.innerHTML = game.title
 	if (game.version !== "") {
-		gameVersion.innerHTML = game.version
+		gameVersion.innerHTML = `v${game.version}`
 	} else {
 		gameVersion.innerHTML = "Final"
 	}
+	
+	gameVersion.innerHTML += ` - ${game.rating}★`
 	
 	_.forEach(game.tags, (tag) => {
 		tagDisplay.innerHTML += getTag(tag)
@@ -102,11 +118,96 @@ async function openGame(game) {
 		tagDisplay.innerHTML += getNewTag(tag)
 	})
 	
+	linksDisplay.innerHTML = ""
+	
+	_.forIn(game.links, (link, key) => {
+		linksDisplay.innerHTML += getLink(key)
+	})
+	
+	_.forIn(game.links, (link, key) => {
+		document.getElementById(key).addEventListener("click", () => {
+			window.manager.openURL(link)
+		})
+	})
+	
 	descriptionDisplay.innerHTML = game.description
+	
+	let clone = installButton.cloneNode(true)
+	installButton.replaceWith(clone)
+	installButton = clone
+	installButton.addEventListener("click", () => {
+		window.manager.download(game, null)
+	})
+	
+	const installedGames = await window.manager.getInstalledGames()
+	if (installedGames.find((installedGame) => installedGame.id === game.id)) {
+		clone = uninstallButton.cloneNode(true)
+		uninstallButton.replaceWith(clone)
+		uninstallButton = clone
+		uninstallButton.addEventListener("click", () => {
+			window.manager.remove(game)
+			closeGame()
+		})
+		
+		updateUninstallBar = data => {
+			if (data.id === currentGame.id) {
+				progressBar.classList.remove("bg-gray-600")
+				progressBar.classList.remove("bg-green-700")
+				if (!progressBar.classList.contains("bg-red-700"))
+					progressBar.classList.add("bg-red-700")
+				progressBar.style.width = `${data.progress * 100}%`
+				progressBar.innerHTML = `${Math.round(data.progress * 100)}%`
+				
+				if (data.progress >= 1) {
+					setTimeout(() => {
+						openGame(game)
+					}, 2000)
+				}
+			}
+		}
+		
+		clone = playButton.cloneNode(true)
+		playButton.replaceWith(clone)
+		playButton = clone
+		playButton.addEventListener("click", async () => {
+			window.manager.openPath(await window.manager.getGameExecutable(game))
+		})
+	}
+	
+	progressBar.innerHTML = ""
+	
+	progressBar.classList.remove("bg-green-700")
+	progressBar.classList.remove("bg-red-700")
+	progressBar.classList.add("bg-gray-600")
+	
+	updateInstallBar = async function (data) {
+		if (data.id === currentGame.id) {
+			progressBar.classList.remove("bg-gray-600")
+			progressBar.classList.remove("bg-red-700")
+			if (!progressBar.classList.contains("bg-green-700"))
+				progressBar.classList.add("bg-green-700")
+			progressBar.style.width = `${data.progress * 100}%`
+			progressBar.innerHTML = `${Math.round(data.progress * 100)}%`
+			
+			if (data.progress >= 1) {
+				setTimeout(() => {
+					openGame(game)
+				}, 2000)
+			}
+		}
+	}
 	
 	closeSearch()
 	mainContent.style.display = "block"
 }
+
+window.manager.onProgress((_event, data) => {
+	if (data.type === 'i') {
+		updateInstallBar(data)
+	} else if (data.type === 'u') {
+		updateUninstallBar(data)
+	}
+})
 
 window.manager.login(null, null, false).then((result) => {
 	if (result != null) {
@@ -172,4 +273,10 @@ login.addEventListener("click", async (e) => {
 	} else {
 		loginOverlay.style.display = "none"
 	}
+})
+
+openFolder.addEventListener("click", async (e) => {
+	e.preventDefault()
+	
+	window.manager.openPath(await window.manager.getGameFolder(currentGame.id))
 })

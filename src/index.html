@@ -8,7 +8,7 @@
 </head>
 <body class="font-sans">
 	<div class="fixed h-full w-full z-10" id="overlay-bg-login">
-		<div class="bg-cyan-900" id="overlay-login">
+		<div class="bg-gray-800" id="overlay-login">
 			<h1 class="text-center text-5xl p-3 font-semibold">login</h1>
 
 			<form class="block" id="login-form">
@@ -23,7 +23,7 @@
 					       name="password" type="password">
 				</label>
 				<br>
-				<button class="block margin-center py-2 bg-cyan-500 p-5 rounded-sm" id="login-button" type="button">
+				<button class="block margin-center py-2 bg-gray-500 p-5 rounded-sm" id="login-button" type="button">
 					login
 				</button>
 			</form>
@@ -31,7 +31,7 @@
 		</div>
 	</div>
 	<div class="fixed h-full w-full z-10" id="overlay-bg-search">
-		<div class="bg-cyan-900" id="overlay-search">
+		<div class="bg-gray-800" id="overlay-search">
 			<h1 class="text-center text-5xl p-3 font-semibold">search</h1>
 
 			<form class="block" id="search-form">
@@ -55,32 +55,42 @@
 	</div>
 	<div class="flex">
 		<div class="sidebar">
-			<div class="flex bg-cyan-600" id="sidebar-top">
+			<div class="flex bg-gray-600" id="sidebar-top">
 				<div class="px-2.5 w-full h-full">
 					<p class="h-full text-3xl text-center">rpdl manager</p>
 				</div>
 			</div>
-			<div class="flex bg-cyan-700 grid grid-rows-1 grid-cols-2" id="sidebar-options">
-				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-r-2 border-b-2 cursor-pointer"
+			<div class="flex bg-gray-700 grid grid-rows-1 grid-cols-2" id="sidebar-options">
+				<div class="px-2.5 w-full h-full text-center border-solid border-gray-800 border-r-2 border-b-2 cursor-pointer"
 				     id="search-button">
 					<p class="h-full align-text-top inline-block">search</p>
 				</div>
-				<div class="px-2.5 w-full h-full text-center border-solid border-cyan-800 border-l-2 border-b-2 cursor-pointer">
+				<div class="px-2.5 w-full h-full text-center border-solid border-gray-800 border-l-2 border-b-2 cursor-pointer">
 					<p class="h-full align-text-top inline-block">filter</p>
 				</div>
 			</div>
-			<div class="bg-cyan-900" id="sidebar">
+			<div class="bg-gray-800" id="sidebar">
 				<!--This is where all the links to the games go-->
 			</div>
 		</div>
+		<div class="bg-gray-900 w-1">
+			<div class="h-max h-full "></div>
+		</div>
 		<div class="bg-gray-800" id="main">
 			<div id="main-content">
-				<div class="bg-gray-700 w-full grid grid-rows-1 grid-cols-3">
-					<h1 class="text-gray-300 text-2xl text-center py-4">Install</h1>
-					<h1 class="text-gray-300 text-2xl text-center py-4">Uninstall</h1>
-					<h1 class="text-gray-300 text-2xl text-center py-4">4GB</h1>
+				<div class="bg-gray-700 w-full ">
+					<div class="grid grid-rows-1 grid-cols-4">
+						<h1 id="play-current" class="text-gray-300 text-2xl text-center py-4 cursor-pointer">Play</h1>
+						<h1 id="install-current" class="text-gray-300 text-2xl text-center py-4 cursor-pointer">Install</h1>
+						<h1 id="uninstall-current" class="text-gray-300 text-2xl text-center py-4 cursor-pointer">Uninstall</h1>
+						<h1 id="open-folder" class="text-gray-300 text-2xl text-center py-4 cursor-pointer">Open Folder</h1>
+					</div>
+					<div class="w-full bg-gray-600" id="progress-bar-container">
+						<div class="bg-gray-600 transition-all font-small text-green-100 text-center p-0.5 leading-none w-0" id="progress-bar"></div>
+					</div>
 				</div>
-				<h1 class="text-center text-5xl text-gray-300 py-2" id="game-title">Title</h1>
+
+				<h1 class="text-center text-5xl text-gray-300 py-4" id="game-title">Title</h1>
 				<h1 class="text-center text-3xl text-gray-400" id="game-version">Version</h1>
 				<hr class="bg-gray-500 h-0.5 border-none mx-4 my-2">
 				<ul class="flex text-center align-middle justify-center flex-wrap" id="tags">
@@ -89,9 +99,7 @@
 				</ul>
 				<p class="text-gray-400 text-center" id="description">desc</p>
 				<ul class="text-center flex justify-center flex-wrap align-middle" id="links">
-					<li class="text-cyan-300 text-xl px-1 underline decoration-dotted decoration-gray-400 cursor-pointer">
-						<a>Patreon</a>
-					</li>
+					<!-- This is all the links for the game like patreon and f95zone -->
 				</ul>
 
 
@@ -114,11 +122,11 @@
 
 
 
-				<ul class="text-gray-500 text-center" id="settings">
-					<li class="px-1 underline decoration-dotted decoration-dashed decoration-gray-600 cursor-pointer">
+				<!--<ul class="text-gray-400 text-center" id="settings">
+					<li id="open-folder" class="px-1 underline decoration-dotted decoration-dashed decoration-gray-600 cursor-pointer">
 						Open Folder
 					</li>
-				</ul>
+				</ul>-->
 			</div>
 		</div>
 	</div>

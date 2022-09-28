@@ -8,8 +8,13 @@ contextBridge.exposeInMainWorld('manager', {
 	login: (username, password, refreshToken) => ipcRenderer.invoke("login", username, password, refreshToken),
 	search: (query, page) => ipcRenderer.invoke("search", query, page),
 	download: (game, old) => ipcRenderer.invoke("download", game, old),
+	remove: (game) => ipcRenderer.invoke("remove", game),
 	resumeDownloads: () => ipcRenderer.invoke("resume-downloads"),
 	openURL: (url) => ipcRenderer.invoke("open-url", url),
+	openPath: (path) => ipcRenderer.invoke("open-path", path),
+	getGameFolder: (id) => ipcRenderer.invoke("get-game-folder", id),
+	getGameExecutable: (id) => ipcRenderer.invoke("get-game-executable", id),
+	onProgress: (callback) => ipcRenderer.on("progress", callback),
 })
 
 window.addEventListener('DOMContentLoaded', async () => {

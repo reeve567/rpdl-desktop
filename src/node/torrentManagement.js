@@ -120,12 +120,15 @@ async function downloadTorrent(game) {
 				})
 			}
 			lastBytes += bytes
-			if (lastDate + 5000 < new Date().getTime()) {
-				console.log("Just downloaded " + lastBytes / 1000000 + " MB")
-				console.log("Download speed is " + lastBytes / 5000000 + " MB/s")
-				console.log("Progress is " + torrent.progress * 100 + " percent")
-				lastBytes = 0
-				lastDate = new Date().getTime()
+			if (lastDate + 1000 < new Date().getTime()) {
+				if (lastDate + 5000 < new Date().getTime()) {
+					console.log("Just downloaded " + lastBytes / 1000000 + " MB")
+					console.log("Download speed is " + lastBytes / 5000000 + " MB/s")
+					console.log("Progress is " + torrent.progress * 100 + " percent")
+					lastBytes = 0
+					lastDate = new Date().getTime()
+				}
+				updateProgress(game.id, torrent.progress, 'i')
 			}
 		})
 		
@@ -186,13 +189,18 @@ async function downloadTorrent(game) {
 
 async function deleteTorrent(game) {
 	await fs.promises.unlink(path.join(torrentFilesPath, game.torrent_id + ".torrent"))
+	updateProgress(id, .5, 'u')
 	await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".zip"))
+	updateProgress(id, .75, 'u')
 	await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".7z"))
+	updateProgress(id, 1, 'u')
 }
 
 async function deleteGame(game) {
 	if (game != null) {
+		updateProgress(game.id, 0, 'u')
 		_.remove(installedGames, {id: game.id})
+		updateProgress(game.id, 25, 'u')
 		await deleteTorrent(game)
 	}
 }
@@ -206,6 +214,15 @@ async function getInstalledGames() {
 	}
 }
 
+function updateProgress(id, progress, type) {
+	const main = require("../main.js")
+	
+	main.getMainWindow().webContents.send("progress", {
+		id: id,
+		progress: progress
+	})
+}
+
 module.exports = {
-	installGame, downloadTorrent, deleteTorrent, deleteGame, getInstalledGames, startDownloads
+	installGame, downloadTorrent, deleteTorrent, deleteGame, getInstalledGames, startDownloads, gamesPath
 }
