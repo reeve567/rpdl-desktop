@@ -9,18 +9,18 @@
     "tailwind": "npx tailwindcss -i ./src/index.css -o ./dist/index.css --watch"
   },
   "dependencies": {
-    "7zip": "^0.0.6",
+    "7zip-bin": "^5.2.0",
     "bent": "^7.3.12",
     "cheerio": "^1.0.0-rc.12",
     "create-torrent": "^5.0.4",
     "cross-unzip": "^0.2.1",
     "electron": "^20.0.2",
     "lodash": "^4.17.21",
+    "node-7z": "^3.0.0",
     "node-fetch": "^3.2.10",
     "parse-torrent": "^9.1.5",
     "request-promise-native": "^1.0.9",
-    "webtorrent": "^1.8.26",
-    "win-7zip": "^0.1.1"
+    "webtorrent": "^1.8.26"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.8",

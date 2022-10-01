@@ -4,9 +4,8 @@ const createTorrent = require("create-torrent")
 const bent = require("bent")
 const fs = require("fs")
 const path = require("path")
-const {
-	unzip
-} = require("cross-unzip")
+const sevenBin = require("7zip-bin")
+const Seven = require("node-7z")
 const rpdl = require("./rpdl.js")
 const _ = require("lodash")
 const settings = require("../settings.json")
@@ -164,9 +163,16 @@ async function downloadTorrent(game) {
 				fs.mkdirSync(versionDir)
 			}
 			
-			await new Promise(r => setTimeout(r, 5000))
+			/*await new Promise(r => setTimeout(r, 3000))*/
 			
-			await unzip(path.join(gameDir, game.torrent_id + "." + ext), versionDir, async (err) => {
+			console.log("Unzipping game...")
+			const zipStream = Seven.extractFull(path.join(gameDir, game.torrent_id + "." + ext), versionDir, {
+				"recursive": true,
+				"workingDir": ".",
+				"$progress": false
+			})
+			
+			zipStream.on("end", async () => {
 				console.log("Unzipped game")
 				
 				await fs.promises.readdir(versionDir, {
@@ -176,7 +182,7 @@ async function downloadTorrent(game) {
 						if (file.isDirectory()) {
 							let dir = path.join(versionDir, file.name)
 							for (const file of await fs.promises.readdir(dir)) {
-								console.log(path.join(versionDir, file))
+								console.log("Moved file " + path.join(dir, file) + " > " + path.join(versionDir, file))
 								await fs.promises.rename(path.join(dir, file), path.join(versionDir, file))
 							}
 							
