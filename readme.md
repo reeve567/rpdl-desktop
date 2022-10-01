@@ -23,3 +23,6 @@ Installation:
 2. Install NodeJS (not sure if there's a version requirement, I'm running v16.15.1)
 3. run `npm i` in the main directory (installs all the dependencies to the project folder under `node_modules`)
 4. Either create a `.bat` file to run the command or run `npm run start`
+
+If you do not have access to a backend, (which is very possible rn) it is possible to get your own running via https://github.com/reeve567/rpdl-backend, all you need is a Java JDK.
+I'll have releases sooner or later, but for now this is the best way to go about it.
