@@ -16,3 +16,10 @@ Features:
 * Auto-refresh of your rpdl token
 
 At the moment, this is still in progress and there's a lot that needs work.
+
+Installation:
+
+1. Clone the repo (or download the zip)
+2. Install NodeJS (not sure if there's a version requirement, I'm running v16.15.1)
+3. run `npm i` in the main directory (installs all the dependencies to the project folder under `node_modules`)
+4. Either create a `.bat` file to run the command or run `npm run start`
