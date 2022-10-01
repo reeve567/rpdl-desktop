@@ -13,7 +13,7 @@ const childProcess = require("child_process")
 const json = bent("json", "GET")
 const settings = require("./settings.json")
 const _ = require("./web/lodash");
-const timeDataPath = path.join("../playtime.json")
+const timeDataPath = path.join("./playtime.json")
 
 let timeData
 

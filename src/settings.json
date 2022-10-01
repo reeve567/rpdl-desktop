@@ -1,7 +1,7 @@
 {
 	"rpdlURL": "https://dl.rpdl.net/",
 	"f95URL": "https://f95zone.to/",
-	"backendURL":  "http://localhost:5671",
+	"backendURL":  "http://homelab.reeve.dev:5671",
 	"auto-update": false,
 	"max-download-speed": 60000000,
 	"max-upload-speed": 5000000
