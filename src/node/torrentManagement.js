@@ -4,7 +4,9 @@ const createTorrent = require("create-torrent")
 const bent = require("bent")
 const fs = require("fs")
 const path = require("path")
-const {zip, unzip} = require("cross-unzip")
+const {
+	unzip
+} = require("cross-unzip")
 const rpdl = require("./rpdl.js")
 const _ = require("lodash")
 const settings = require("../settings.json")
@@ -137,9 +139,12 @@ async function downloadTorrent(game) {
 			done = true
 			
 			game.downloading = false
+			
 			_.remove(activeDownloads, (id) => {
 				return id === game.id
 			})
+			
+			await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 			
 			let ext = torrent.files[0].path.split(".").pop()
 			
@@ -158,12 +163,10 @@ async function downloadTorrent(game) {
 			if (!fs.existsSync(versionDir)) {
 				fs.mkdirSync(versionDir)
 			}
-
+			
+			await new Promise(r => setTimeout(r, 5000))
+			
 			await unzip(path.join(gameDir, game.torrent_id + "." + ext), versionDir, async (err) => {
-				if (err != null) {
-					throw err
-				}
-				
 				console.log("Unzipped game")
 				
 				await fs.promises.readdir(versionDir, {
@@ -173,6 +176,7 @@ async function downloadTorrent(game) {
 						if (file.isDirectory()) {
 							let dir = path.join(versionDir, file.name)
 							for (const file of await fs.promises.readdir(dir)) {
+								console.log(path.join(versionDir, file))
 								await fs.promises.rename(path.join(dir, file), path.join(versionDir, file))
 							}
 							
@@ -188,12 +192,21 @@ async function downloadTorrent(game) {
 }
 
 async function deleteTorrent(game) {
-	await fs.promises.unlink(path.join(torrentFilesPath, game.torrent_id + ".torrent"))
-	updateProgress(id, .5, 'u')
-	await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".zip"))
-	updateProgress(id, .75, 'u')
-	await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".7z"))
-	updateProgress(id, 1, 'u')
+	try {
+		await fs.promises.unlink(path.join(torrentFilesPath, game.id + "-" + game.torrent_id + ".torrent"))
+	} catch (e) {
+	}
+	updateProgress(game.id, .5, 'u')
+	try {
+		await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".7z"))
+	} catch (e) {
+	}
+	
+	try {
+		await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".zip"))
+	} catch (e) {
+	}
+	updateProgress(game.id, 1, 'u')
 }
 
 async function deleteGame(game) {
@@ -219,10 +232,17 @@ function updateProgress(id, progress, type) {
 	
 	main.getMainWindow().webContents.send("progress", {
 		id: id,
-		progress: progress
+		progress: progress,
+		type: type
 	})
 }
 
 module.exports = {
-	installGame, downloadTorrent, deleteTorrent, deleteGame, getInstalledGames, startDownloads, gamesPath
+	installGame,
+	downloadTorrent,
+	deleteTorrent,
+	deleteGame,
+	getInstalledGames,
+	startDownloads,
+	gamesPath
 }

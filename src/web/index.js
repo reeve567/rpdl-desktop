@@ -8,8 +8,12 @@ const search = document.getElementById("search-input")
 const searchForm = document.getElementById("search-form")
 const searchOverlay = document.getElementById("overlay-bg-search")
 
+const filter = document.getElementById("filter")
+
 const searchButton = document.getElementById("search-button")
 const searchClose = document.getElementById("search-close")
+
+const noGame = document.getElementById("no-selected")
 
 const mainContent = document.getElementById("main-content")
 const gameTitle = document.getElementById("game-title")
@@ -76,15 +80,27 @@ function closeSearch() {
 	searchOverlay.style.display = "none"
 }
 
-function updateInstalled() {
+async function updateInstalled() {
 	document.getElementById("sidebar").innerHTML = ""
 	
+	const ret = await window.manager.parseSearch(filter.value)
+	
 	window.manager.getInstalledGames().then((games) => {
-		_.forEach(games, (game) => {
+		const filtered = _.filter(games, (game) => {
+			return (ret.query === "" || game.description.toLowerCase().indexOf(ret.query) !== -1 || game.title.toLowerCase().indexOf(ret.query) !== -1) &&
+			       (ret.and_tags.length === 0 || _.difference(game.tags, ret.and_tags).length === game.tags.length - ret.and_tags.length) &&
+			       (ret.or_tags.length === 0 || _.difference(game.tags, ret.or_tags).length !== game.tags.length) &&
+			       (ret.not_tags.length === 0 || _.difference(game.tags, ret.not_tags).length === game.tags.length) &&
+			       (ret.engine.length === 0 || game.category.name.toLowerCase() === ret.engine)
+		})
+		
+		const sorted = _.sortBy(filtered, ['title'])
+		
+		_.forEach(sorted, (game) => {
 			document.getElementById("sidebar").innerHTML += getGameItem(game)
 		})
 		
-		_.forEach(games, (game) => {
+		_.forEach(sorted, (game) => {
 			document.getElementById(`installed-${game.id}`).addEventListener("click", () => {
 				openGame(game)
 			})
@@ -94,6 +110,7 @@ function updateInstalled() {
 
 function closeGame() {
 	mainContent.style.display = "none"
+	noGame.style.display = "block"
 }
 
 async function openGame(game) {
@@ -133,6 +150,7 @@ async function openGame(game) {
 	descriptionDisplay.innerHTML = game.description
 	
 	let clone = installButton.cloneNode(true)
+	installButton.text = ""
 	installButton.replaceWith(clone)
 	installButton = clone
 	installButton.addEventListener("click", () => {
@@ -146,6 +164,7 @@ async function openGame(game) {
 		uninstallButton = clone
 		uninstallButton.addEventListener("click", () => {
 			window.manager.remove(game)
+			updateInstalled()
 			closeGame()
 		})
 		
@@ -153,8 +172,7 @@ async function openGame(game) {
 			if (data.id === currentGame.id) {
 				progressBar.classList.remove("bg-gray-600")
 				progressBar.classList.remove("bg-green-700")
-				if (!progressBar.classList.contains("bg-red-700"))
-					progressBar.classList.add("bg-red-700")
+				if (!progressBar.classList.contains("bg-red-700")) progressBar.classList.add("bg-red-700")
 				progressBar.style.width = `${data.progress * 100}%`
 				progressBar.innerHTML = `${Math.round(data.progress * 100)}%`
 				
@@ -184,8 +202,7 @@ async function openGame(game) {
 		if (data.id === currentGame.id) {
 			progressBar.classList.remove("bg-gray-600")
 			progressBar.classList.remove("bg-red-700")
-			if (!progressBar.classList.contains("bg-green-700"))
-				progressBar.classList.add("bg-green-700")
+			if (!progressBar.classList.contains("bg-green-700")) progressBar.classList.add("bg-green-700")
 			progressBar.style.width = `${data.progress * 100}%`
 			progressBar.innerHTML = `${Math.round(data.progress * 100)}%`
 			
@@ -198,6 +215,7 @@ async function openGame(game) {
 	}
 	
 	closeSearch()
+	noGame.style.display = "none"
 	mainContent.style.display = "block"
 }
 
@@ -247,7 +265,7 @@ searchForm.addEventListener("submit", async (e) => {
 		for (let i = 0; i < Math.min(12, games.length); i++) {
 			document.getElementById(`install-${i}`).addEventListener("click", () => {
 				window.manager.download(games[i], null).then(() => {
-				
+					updateInstalled()
 				})
 			})
 			
@@ -259,6 +277,10 @@ searchForm.addEventListener("submit", async (e) => {
 		
 		console.log("done rendering")
 	})
+})
+
+filter.addEventListener("input", (e) => {
+	updateInstalled()
 })
 
 login.addEventListener("click", async (e) => {

@@ -27,9 +27,9 @@
 }
 
 #main-content {
-    /*display: none;*/
+    display: none;
     overflow-y: auto;
-    height: 100%;
+    @apply h-full
 }
 
 #overlay-bg-login {
@@ -59,6 +59,20 @@
 
 #progress-bar-container {
 
+}
+
+#filter {
+    background: none;
+    line-height: normal;
+    @apply text-center border-none focus:outline-none align-text-bottom
+}
+
+#filter::placeholder {
+    @apply text-black
+}
+
+#no-selected {
+    margin-top: 25%;
 }
 
 .margin-center {

@@ -1,4 +1,7 @@
-const {contextBridge, ipcRenderer} = require('electron')
+const {
+	contextBridge,
+	ipcRenderer
+} = require('electron')
 
 // expose an event for a script on `index.html` to use
 contextBridge.exposeInMainWorld('manager', {
@@ -6,6 +9,7 @@ contextBridge.exposeInMainWorld('manager', {
 	getInstalledGames: () => ipcRenderer.invoke("get-installed-games"),
 	checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),
 	login: (username, password, refreshToken) => ipcRenderer.invoke("login", username, password, refreshToken),
+	parseSearch: (query) => ipcRenderer.invoke("parse-search", query),
 	search: (query, page) => ipcRenderer.invoke("search", query, page),
 	download: (game, old) => ipcRenderer.invoke("download", game, old),
 	remove: (game) => ipcRenderer.invoke("remove", game),

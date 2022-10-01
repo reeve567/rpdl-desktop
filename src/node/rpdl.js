@@ -23,12 +23,16 @@ async function findUpdates(installedGames) {
 	_.forEach(installedGames, async (game) => {
 		console.log(game)
 		updates.push({
-			id: game.id, torrent_id: game.torrent_id,
+			id: game.id,
+			torrent_id: game.torrent_id,
 		})
 	})
 	
 	const returned = await rp(url, {
-		method: "POST", json: true, body: updates, headers: {
+		method: "POST",
+		json: true,
+		body: updates,
+		headers: {
 			"Content-Type": "application/json",
 		}
 	})
@@ -42,7 +46,10 @@ async function tryLogin(loginData) {
 	const loginURL = apiURL + "user/login"
 	try {
 		return await rp(loginURL, {
-			method: "POST", json: true, body: loginData, headers: {
+			method: "POST",
+			json: true,
+			body: loginData,
+			headers: {
 				"Content-Type": "application/json",
 			}
 		})
@@ -74,7 +81,8 @@ async function login(username, password, refreshToken) {
 		}
 		
 		const loginData = {
-			login: username, password: password,
+			login: username,
+			password: password,
 		}
 		
 		const result = await tryLogin(loginData)
@@ -85,7 +93,9 @@ async function login(username, password, refreshToken) {
 		}
 		
 		user = {
-			login: username, password: password, token: result.data.token,
+			login: username,
+			password: password,
+			token: result.data.token,
 		}
 		
 		await fs.promises.writeFile(userFile, JSON.stringify(user))
@@ -103,5 +113,7 @@ function sleep(ms) {
 }
 
 module.exports = {
-	findUpdates, login, apiURL
+	findUpdates,
+	login,
+	apiURL
 }

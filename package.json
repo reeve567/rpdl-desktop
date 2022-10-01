@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "type": "commonjs",
   "scripts": {
     "start": "electron ./src/main.js",
     "tailwind": "npx tailwindcss -i ./src/index.css -o ./dist/index.css --watch"

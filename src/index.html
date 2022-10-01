@@ -61,13 +61,13 @@
 				</div>
 			</div>
 			<div class="flex bg-gray-700 grid grid-rows-1 grid-cols-2" id="sidebar-options">
-				<div class="px-2.5 w-full h-full text-center border-solid border-gray-800 border-r-2 border-b-2 cursor-pointer"
+				<div class="w-full h-full text-center border-solid border-gray-800 border-r-2 border-b-2 cursor-pointer"
 				     id="search-button">
 					<p class="h-full align-text-top inline-block">search</p>
 				</div>
-				<div class="px-2.5 w-full h-full text-center border-solid border-gray-800 border-l-2 border-b-2 cursor-pointer">
-					<p class="h-full align-text-top inline-block">filter</p>
-				</div>
+				<label class="w-full h-full text-center border-solid border-gray-800 border-l-2 border-b-2">
+					<input id="filter" class="h-full align-text-top inline-block p-0 align-middle text-black" placeholder="filter" spellcheck="false">
+				</label>
 			</div>
 			<div class="bg-gray-800" id="sidebar">
 				<!--This is where all the links to the games go-->
@@ -127,6 +127,9 @@
 						Open Folder
 					</li>
 				</ul>-->
+			</div>
+			<div id="no-selected">
+				<h1 class="text-gray-300 w-full text-center text-4xl">No Game Selected</h1>
 			</div>
 		</div>
 	</div>

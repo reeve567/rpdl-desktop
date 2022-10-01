@@ -1,12 +1,27 @@
-const {app, BrowserWindow, ipcMain } = require("electron")
+const {
+	app,
+	BrowserWindow,
+	ipcMain
+} = require("electron")
 const path = require("path")
 const fs = require("fs")
 const rpdl = require("./node/rpdl.js")
 const tm = require("./node/torrentManagement.js")
 const bent = require("bent")
+const childProcess = require("child_process")
 
 const json = bent("json", "GET")
 const settings = require("./settings.json")
+const _ = require("./web/lodash");
+const timeDataPath = path.join("../playtime.json")
+
+let timeData
+
+if (fs.existsSync(timeDataPath)) {
+	timeData = JSON.parse(fs.readFileSync(timeDataPath, {encoding: "utf8"}))
+} else {
+	timeData = {}
+}
 
 const querySearch = /[^\[({]*/
 let win
@@ -29,6 +44,46 @@ function getMainWindow() {
 
 module.exports = {
 	getMainWindow
+}
+
+function parseSearch(query) {
+	let and_tags_string = query.substring(query.indexOf("[") + 1, query.indexOf("]"))
+	let and_tags = and_tags_string.split(",").map((tag) => {
+		
+		return tag.trim().toLowerCase()
+	}).filter((tag) => {
+		return tag.length > 0
+	})
+	
+	let or_tags_string = query.substring(query.indexOf("{") + 1, query.indexOf("}"))
+	let or_tags = or_tags_string.split(",").map((tag) => {
+		return tag.trim().toLowerCase()
+	}).filter((tag) => {
+		return tag.length > 0
+	})
+	
+	let not_tags_string = query.substring(query.indexOf("<") + 1, query.indexOf(">"))
+	let not_tags = not_tags_string.split(",").map((tag) => {
+		return tag.trim().toLowerCase()
+	}).filter((tag) => {
+		return tag.length > 0
+	})
+	
+	let engine = query.substring(query.indexOf("(") + 1, query.indexOf(")"))
+	
+	let search_term = querySearch.exec(query)[0]
+	
+	return {
+		and_tags: and_tags,
+		or_tags: or_tags,
+		not_tags: not_tags,
+		engine: engine.toLowerCase(),
+		query: search_term.replaceAll(/[^a-zA-Z0-9\-.]/g, "")
+	}
+}
+
+async function trackTime(id, torrent_id, exe) {
+
 }
 
 app.whenReady().then(() => {
@@ -60,42 +115,14 @@ app.whenReady().then(() => {
 		return await json(settings.backendURL + "/getF95Info?game=" + id)
 	})
 	
+	ipcMain.handle("parse-search", (event, query) => {
+		return parseSearch(query)
+	})
+	
 	ipcMain.handle("search", async (event, query) => {
-		let andTagString = query.substring(query.indexOf("[") + 1, query.indexOf("]"))
-		let and_tags = andTagString.split(",").map((tag) => {
-			
-			return tag.trim().toLowerCase()
-		}).filter((tag) => {
-			return tag.length > 0
-		})
+		let ret = parseSearch(query)
 		
-		let orTagString = query.substring(query.indexOf("{") + 1, query.indexOf("}"))
-		let or_tags = orTagString.split(",").map((tag) => {
-			return tag.trim().toLowerCase()
-		}).filter((tag) => {
-			return tag.length > 0
-		})
-		
-		let notTagString = query.substring(query.indexOf("<") + 1, query.indexOf(">"))
-		let not_tags = notTagString.split(",").map((tag) => {
-			return tag.trim().toLowerCase()
-		}).filter((tag) => {
-			return tag.length > 0
-		})
-		
-		let engine = query.substring(query.indexOf("(") + 1, query.indexOf(")"))
-		
-		let search_term = querySearch.exec(query)[0]
-		
-		console.log(and_tags, or_tags, not_tags, engine, search_term)
-		
-		return await json(settings.backendURL + "/searchGames", {
-			and_tags: and_tags,
-			or_tags: or_tags,
-			not_tags: not_tags,
-			engine: engine.toLowerCase(),
-			query: search_term.replaceAll(/[^a-zA-Z0-9\-.]/g, "")
-		})
+		return await json(settings.backendURL + "/searchGames", ret)
 	})
 	
 	ipcMain.handle("open-url", async (event, url) => {
@@ -103,20 +130,59 @@ app.whenReady().then(() => {
 		await require("electron").shell.openExternal(url)
 	})
 	
-	ipcMain.handle("open-path", async (event, path) => {
-		await require("electron").shell.openPath(path)
+	ipcMain.handle("open-path", async (event, file_path) => {
+		if (file_path.indexOf(".exe") !== -1) {
+			const split = file_path.split(path.sep)
+			const torrent_id = split[split.length - 2]
+			const id = split[split.length - 3]
+			
+			let game = childProcess.spawn(file_path)
+			game.once("spawn", async () => {
+				let stop = false
+				game.once("close", () => {
+					stop = true
+				})
+				
+				if (timeData[id] === undefined) {
+					timeData[id] = {}
+				}
+				
+				if (timeData[id][torrent_id] === undefined) {
+					timeData[id][torrent_id] = 0
+				}
+				
+				while (!stop) {
+					await new Promise(r => setTimeout(r, 1000))
+					timeData[id][torrent_id] += 1
+				}
+			})
+			
+		} else {
+			await require("electron").shell.openPath(file_path)
+		}
 	})
 	
 	ipcMain.handle("get-game-folder", async (event, id) => {
-		return path.join(path.join(tm.gamesPath, "" + id))
+		return path.resolve(path.join(tm.gamesPath, "" + id))
 	})
 	
-	ipcMain.handle("get-game-executable", async (event, id) => {
-		const gameDir = path.join(tm.gamesPath, "" + id)
-		const installed = await tm.getInstalledGames()
-		const game = installed[id]
+	ipcMain.handle("get-game-executable", async (event, game) => {
+		const gameDir = path.join(tm.gamesPath, "" + game.id)
 		const version = game.torrent_id
 		const versionDir = path.join(gameDir, "" + version)
+		
+		const files = await fs.promises.readdir(versionDir)
+		
+		const executables = _.filter(files, (file) => {
+			// Make this work on linux
+			return file.endsWith(".exe") && !file.endsWith("-32.exe")
+		})
+		
+		if (executables.length === 1) {
+			return path.resolve(versionDir, executables[0])
+		} else {
+			console.error("Could not figure out what the executable is! " + game.id + "-" + game.torrent_id)
+		}
 		
 	})
 	
@@ -134,6 +200,12 @@ app.whenReady().then(() => {
 
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
+		console.log("Closing...")
+		//console.log(JSON.stringify(timeData))
+		fs.writeFileSync(timeDataPath, JSON.stringify(timeData), {
+			encoding: "utf8"
+		})
+		// TODO: allow the program to run in the background so that you can track time while it's somewhat closed
 		app.quit()
 	}
 })
