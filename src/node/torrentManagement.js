@@ -219,6 +219,8 @@ async function downloadTorrent(game) {
 					}
 				})
 				
+				await fs.promises.unlink(gameFile)
+				
 				await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 			})
 		})
