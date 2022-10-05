@@ -129,6 +129,7 @@ async function downloadTorrent(game) {
 				
 				updateProgress(game.id, torrent.progress, 'i')
 			}
+			
 			if (torrent.progress >= 1) {
 				progressReported = true
 				
