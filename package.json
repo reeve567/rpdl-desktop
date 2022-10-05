@@ -5,7 +5,7 @@
   "main": "main.js",
   "type": "commonjs",
   "scripts": {
-    "start": "electron ./src/main.js",
+    "start": "electron ./src/main.js --trace-warnings",
     "tailwind": "npx tailwindcss -i ./src/index.css -o ./dist/index.css --watch"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
     "webtorrent": "^1.8.26"
   },
   "devDependencies": {
+    "@types/node-7z": "^2.1.4",
     "autoprefixer": "^10.4.8",
     "electron": "^20.0.2",
     "postcss": "^8.4.16",

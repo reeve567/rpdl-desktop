@@ -154,6 +154,7 @@ async function openGame(game) {
 	installButton.replaceWith(clone)
 	installButton = clone
 	installButton.addEventListener("click", () => {
+		console.log("Starting download...")
 		window.manager.download(game, null)
 	})
 	

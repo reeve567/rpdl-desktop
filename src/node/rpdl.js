@@ -27,8 +27,8 @@ async function findUpdates(installedGames) {
 			torrent_id: game.torrent_id,
 		})
 	})
-	
-	const returned = await rp(url, {
+
+	return await rp(url, {
 		method: "POST",
 		json: true,
 		body: updates,
@@ -36,10 +36,6 @@ async function findUpdates(installedGames) {
 			"Content-Type": "application/json",
 		}
 	})
-	
-	console.log(returned)
-	
-	return returned
 }
 
 async function tryLogin(loginData) {

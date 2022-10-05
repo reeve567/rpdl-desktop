@@ -15,7 +15,7 @@ const getBuffer = bent("buffer")
 const activeDownloads = []
 let installedGames = null
 
-let torrentFilesPath = path.join("torrents");
+let torrentFilesPath = path.join("torrents")
 let torrentDownloadsPath = path.join("torrentDownloads")
 let installedGamesPath = path.join("installedGames.json")
 let gamesPath = path.join("games")
@@ -103,39 +103,52 @@ async function downloadTorrent(game) {
 	client.add(torrentFile, {
 		path: torrentDownloadsPath
 	}, (torrent) => {
+		const files = [];
 		console.log("Added torrent to downloads " + torrentFile)
 		console.log("Files:")
 		torrent.files.forEach(file => {
 			console.log(file.path)
+			files.push(file.path)
 		})
 		console.log("")
 		
 		let done = false
+		let progressReported = true
 		let lastDate = new Date().getTime()
 		let lastBytes = 0
-		torrent.on("download", (bytes) => {
-			if (done) {
-				// seed or remove torrent
-				client.remove(torrent, {}, (err) => {
-					throw err
-				})
-			}
+		
+		torrent.on("download", async (bytes) => {
+			progressReported = false
 			lastBytes += bytes
 			if (lastDate + 1000 < new Date().getTime()) {
-				if (lastDate + 5000 < new Date().getTime()) {
-					console.log("Just downloaded " + lastBytes / 1000000 + " MB")
-					console.log("Download speed is " + lastBytes / 5000000 + " MB/s")
-					console.log("Progress is " + torrent.progress * 100 + " percent")
-					lastBytes = 0
-					lastDate = new Date().getTime()
-				}
+				console.log("Just downloaded " + lastBytes / 1000000 + " MB")
+				console.log("Download speed is " + lastBytes / 1000000 + " MB/s")
+				console.log("Progress is " + torrent.progress * 100 + " percent")
+				lastBytes = 0
+				lastDate = new Date().getTime()
+				
 				updateProgress(game.id, torrent.progress, 'i')
+			}
+			if (torrent.progress >= 1) {
+				progressReported = true
+				
+				client.remove(torrent, {}, (err) => {
+					if (err) {
+						throw err
+					}
+				})
 			}
 		})
 		
 		torrent.on("done", async () => {
 			console.log(`Torrent finished downloading ${torrent.infoHash}`)
+			updateProgress(game.id, 1, 'i')
 			done = true
+			
+			while (!progressReported) {
+				console.log("Waiting for progress to be reported...")
+				await new Promise(resolve => setTimeout(resolve, 1000))
+			}
 			
 			game.downloading = false
 			
@@ -145,7 +158,7 @@ async function downloadTorrent(game) {
 			
 			await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 			
-			let ext = torrent.files[0].path.split(".").pop()
+			let ext = files[0].split(".").pop()
 			
 			const gameDir = path.join(gamesPath, "" + game.id)
 			
@@ -157,19 +170,33 @@ async function downloadTorrent(game) {
 				fs.mkdirSync(gameDir)
 			}
 			
-			await fs.promises.rename(torrent.files[0].path, path.join(gameDir, game.torrent_id + "." + ext))
+			const gameFile = path.join(gameDir, game.torrent_id + "." + ext)
+			
+			await fs.promises.rename(files[0], gameFile)
 			let versionDir = path.join(gameDir, "" + game.torrent_id)
 			if (!fs.existsSync(versionDir)) {
 				fs.mkdirSync(versionDir)
+			} else {
+				fs.rmSync(versionDir, {
+					recursive: true,
+					force: true
+				})
+				fs.mkdirSync(versionDir)
 			}
 			
-			/*await new Promise(r => setTimeout(r, 3000))*/
-			
 			console.log("Unzipping game...")
-			const zipStream = Seven.extractFull(path.join(gameDir, game.torrent_id + "." + ext), versionDir, {
+			const zipStream = await Seven.extractFull(gameFile, versionDir, {
 				"recursive": true,
 				"workingDir": ".",
-				"$progress": false
+				"$progress": false,
+				"$bin": sevenBin.path7za,
+				"$spawnOptions": {
+					"detached": true
+				}
+			})
+			
+			zipStream.on("error", (err) => {
+				console.log(JSON.stringify(err))
 			})
 			
 			zipStream.on("end", async () => {

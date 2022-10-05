@@ -86,7 +86,11 @@ async function trackTime(id, torrent_id, exe) {
 
 }
 
+app.commandLine.appendSwitch("trace-warnings", "true")
+
 app.whenReady().then(() => {
+	app.commandLine.appendSwitch("trace-warnings", "true")
+	
 	ipcMain.handle("get-installed-games", async (event) => {
 		return await tm.getInstalledGames()
 	})
@@ -175,7 +179,7 @@ app.whenReady().then(() => {
 		
 		const executables = _.filter(files, (file) => {
 			// Make this work on linux
-			return file.endsWith(".exe") && !file.endsWith("-32.exe")
+			return file.endsWith(".exe") && !file.endsWith("-32.exe") && !file.endsWith("Handler64.exe")
 		})
 		
 		if (executables.length === 1) {
