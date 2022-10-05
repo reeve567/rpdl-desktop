@@ -120,9 +120,9 @@ async function downloadTorrent(game) {
 		torrent.on("download", async (bytes) => {
 			progressReported = false
 			lastBytes += bytes
-			if (lastDate + 1000 < new Date().getTime()) {
-				console.log("Just downloaded " + lastBytes / 1000000 + " MB")
-				console.log("Download speed is " + lastBytes / 1000000 + " MB/s")
+			if (lastDate + 10_000 < new Date().getTime()) {
+				console.log("Just downloaded " + lastBytes / 1_000_000 + " MB")
+				console.log("Download speed is " + lastBytes / 10_000_000 + " MB/s")
 				console.log("Progress is " + torrent.progress * 100 + " percent")
 				lastBytes = 0
 				lastDate = new Date().getTime()
