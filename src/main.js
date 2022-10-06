@@ -217,6 +217,10 @@ app.whenReady().then(() => {
 				fs.mkdirSync(tm.gamesPath)
 			}
 			
+			if (!fs.existsSync(path.join(tm.gamesPath, "" + game.thread_id))) {
+				fs.mkdirSync(path.join(tm.gamesPath, "" + game.thread_id))
+			}
+			
 			let ext = link.split(".").pop()
 			
 			if (ext === "png" || ext === "jpg") {
