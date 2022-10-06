@@ -155,6 +155,9 @@ app.whenReady().then(() => {
 					await new Promise(r => setTimeout(r, 5000))
 					timeData[id][torrent_id] += 5
 					timeData[id]["last_played"] = _.now()
+					fs.writeFileSync(timeDataPath, JSON.stringify(timeData), {
+						encoding: "utf8"
+					})
 				}
 			})
 			
