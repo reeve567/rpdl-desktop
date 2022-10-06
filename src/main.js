@@ -78,7 +78,7 @@ function parseSearch(query) {
 		or_tags: or_tags,
 		not_tags: not_tags,
 		engine: engine.toLowerCase(),
-		query: search_term.replaceAll(/[^a-zA-Z0-9\-.]/g, "")
+		query: search_term.replaceAll(/[^a-zA-Z0-9-. ]/g, "")
 	}
 }
 
