@@ -209,6 +209,8 @@ app.whenReady().then(() => {
 			
 			const res = regex.exec(html)
 			
+			console.log(res)
+			
 			const link = res[1] + res[2]
 			
 			if (!fs.existsSync(tm.gamesPath)) {
