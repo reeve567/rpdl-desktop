@@ -304,11 +304,15 @@ openFolder.addEventListener("click", async (e) => {
 })
 
 async function checkForUpdates() {
+	const settings = await window.manager.getSettings()
 	do {
 		const updates = await window.manager.checkUpdates()
 		console.log("Updates: ", updates)
+		if (settings["auto_update"]) {
+			// TODO : install a game or two here
+		}
 		await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 5))
-	} while (window.manager.getSettings()["auto_update"])
+	} while (settings["auto_update"])
 }
 
 checkForUpdates().then(r => console.log("done checking for updates"))
