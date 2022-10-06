@@ -5,9 +5,8 @@ const {
 
 // expose an event for a script on `index.html` to use
 contextBridge.exposeInMainWorld('manager', {
-	getGameTags: (game) => ipcRenderer.invoke("get-game-tags", game),
 	getInstalledGames: () => ipcRenderer.invoke("get-installed-games"),
-	checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),
+	checkUpdates: () => ipcRenderer.invoke("check-for-updates"),
 	login: (username, password, refreshToken) => ipcRenderer.invoke("login", username, password, refreshToken),
 	parseSearch: (query) => ipcRenderer.invoke("parse-search", query),
 	search: (query, page) => ipcRenderer.invoke("search", query, page),
@@ -16,9 +15,10 @@ contextBridge.exposeInMainWorld('manager', {
 	resumeDownloads: () => ipcRenderer.invoke("resume-downloads"),
 	openURL: (url) => ipcRenderer.invoke("open-url", url),
 	openPath: (path) => ipcRenderer.invoke("open-path", path),
-	getGameFolder: (id) => ipcRenderer.invoke("get-game-folder", id),
-	getGameExecutable: (id) => ipcRenderer.invoke("get-game-executable", id),
+	getGameFolder: (game) => ipcRenderer.invoke("get-game-folder", game),
+	getGameExecutable: (game) => ipcRenderer.invoke("get-game-executable", game),
 	onProgress: (callback) => ipcRenderer.on("progress", callback),
+	getSettings: () => ipcRenderer.invoke("get-settings"),
 })
 
 window.addEventListener('DOMContentLoaded', async () => {

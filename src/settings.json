@@ -1,8 +1,9 @@
 {
-	"rpdlURL": "https://dl.rpdl.net/",
-	"f95URL": "https://f95zone.to/",
-	"backendURL":  "http://homelab.reeve.dev:5671",
-	"auto-update": false,
-	"max-download-speed": 60000000,
-	"max-upload-speed": 5000000
+	"rpdl_url": "https://dl.rpdl.net/",
+	"backend_url":  "http://home.reeve.dev:5671",
+	"auto_update": true,
+	"seed": false,
+	"max_download_speed": 60000000,
+	"max_upload_speed": 5000000,
+	"games_path": "./games"
 }

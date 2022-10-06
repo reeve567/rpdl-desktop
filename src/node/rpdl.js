@@ -11,17 +11,16 @@ const regExp = {
 	links: /<a href="([^"]*)">/g
 }
 
-const apiURL = settings.rpdlURL + "api/"
+const apiURL = settings["rpdl_url"] + "api/"
 const userFile = path.join("user.json")
 let user = null
 
 async function findUpdates(installedGames) {
 	const updates = []
 	
-	const url = settings.backendURL + "/checkForUpdates"
+	const url = settings["backend_url"] + "/checkForUpdates"
 	
 	_.forEach(installedGames, async (game) => {
-		console.log(game)
 		updates.push({
 			id: game.id,
 			torrent_id: game.torrent_id,
@@ -100,12 +99,6 @@ async function login(username, password, refreshToken) {
 	} else {
 		return user.token
 	}
-}
-
-function sleep(ms) {
-	return new Promise((resolve) => {
-		setTimeout(resolve, ms)
-	})
 }
 
 module.exports = {

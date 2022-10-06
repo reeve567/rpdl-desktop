@@ -82,10 +82,6 @@ function parseSearch(query) {
 	}
 }
 
-async function trackTime(id, torrent_id, exe) {
-
-}
-
 app.commandLine.appendSwitch("trace-warnings", "true")
 
 app.whenReady().then(() => {
@@ -116,7 +112,7 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("get-f95-info", async (event, id) => {
-		return await json(settings.backendURL + "/getF95Info?game=" + id)
+		return await json(settings["backend_url"] + "/getF95Info?game=" + id)
 	})
 	
 	ipcMain.handle("parse-search", (event, query) => {
@@ -126,7 +122,7 @@ app.whenReady().then(() => {
 	ipcMain.handle("search", async (event, query) => {
 		let ret = parseSearch(query)
 		
-		return await json(settings.backendURL + "/searchGames", ret)
+		return await json(settings["backend_url"] + "/searchGames", ret)
 	})
 	
 	ipcMain.handle("open-url", async (event, url) => {
@@ -166,8 +162,8 @@ app.whenReady().then(() => {
 		}
 	})
 	
-	ipcMain.handle("get-game-folder", async (event, id) => {
-		return path.resolve(path.join(tm.gamesPath, "" + id))
+	ipcMain.handle("get-game-folder", async (event, game) => {
+		return path.resolve(path.join(tm.gamesPath, "" + game.id, "" + game.torrent_id))
 	})
 	
 	ipcMain.handle("get-game-executable", async (event, game) => {
@@ -188,6 +184,10 @@ app.whenReady().then(() => {
 			console.error("Could not figure out what the executable is! " + game.id + "-" + game.torrent_id)
 		}
 		
+	})
+	
+	ipcMain.handle("get-settings", (event) => {
+		return settings
 	})
 	
 	tm.getInstalledGames().then(r => {

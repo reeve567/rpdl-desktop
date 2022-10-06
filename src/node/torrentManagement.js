@@ -11,14 +11,14 @@ const _ = require("lodash")
 const settings = require("../settings.json")
 
 const client = new WebTorrent()
+const getJSON = bent("json")
 const getBuffer = bent("buffer")
 const activeDownloads = []
 let installedGames = null
 
-let torrentFilesPath = path.join("torrents")
 let torrentDownloadsPath = path.join("torrentDownloads")
 let installedGamesPath = path.join("installedGames.json")
-let gamesPath = path.join("games")
+let gamesPath = settings["games_path"]
 
 async function startDownloads() {
 	if (installedGames == null) {
@@ -33,10 +33,6 @@ async function startDownloads() {
 }
 
 async function installGame(game, old) {
-	if (!fs.existsSync(torrentFilesPath)) {
-		fs.mkdirSync(torrentFilesPath)
-	}
-	
 	if (!fs.existsSync(torrentDownloadsPath)) {
 		fs.mkdirSync(torrentDownloadsPath)
 	}
@@ -71,40 +67,38 @@ async function installGame(game, old) {
 }
 
 async function downloadTorrent(game) {
-	const downloadURL = rpdl.apiURL + "torrent/download/" + game.torrent_id
-	const torrentFile = path.join(torrentFilesPath, game.id + "-" + game.torrent_id + ".torrent")
-	
+	const gameInfoURL = rpdl.apiURL + "torrent/" + game.torrent_id
 	const token = await rpdl.login(null, null, false)
+	let magnetLink
 	
-	let response = await getBuffer(downloadURL, null, {
+	let response = await getJSON(gameInfoURL, null, {
 		"authorization": "Bearer " + token
 	})
 	
-	await fs.promises.writeFile(torrentFile, response)
-	
-	if (parseTorrent(fs.readFileSync(torrentFile)).announce[0].indexOf("announce/") === -1) {
-		response = await getBuffer(downloadURL, null, {
+	if (response.data.trackers[0].indexOf("announce/") === -1) {
+		response = await getBuffer(gameInfoURL, null, {
 			"authorization": "Bearer " + (await rpdl.login(null, null, true))
 		})
 		
-		await fs.promises.writeFile(torrentFile, response)
-		
-		const file = parseTorrent(fs.readFileSync(torrentFile))
-		
-		if (parseTorrent(fs.readFileSync(torrentFile)).announce[0].indexOf("announce/") === -1) {
-			throw new Error("Announce URL not found, you should probably check your login credentials")
+		if (response.data.trackers[0].indexOf("announce/") === -1) {
+			throw new Error("Announce URL is invalid")
+		} else {
+			magnetLink = response.data.magnet_link
 		}
+	} else {
+		magnetLink = response.data.magnet_link
 	}
 	
-	client.throttleDownload(settings["max-download-speed"])
+	client.throttleDownload(settings["max_download_speed"])
 	
 	game.downloading = true
 	
-	client.add(torrentFile, {
+	client.add(rpdl.apiURL + "torrent/download/" + game.torrent_id, {
+		announce: response.data.trackers,
 		path: torrentDownloadsPath
 	}, (torrent) => {
 		const files = [];
-		console.log("Added torrent to downloads " + torrentFile)
+		console.log("Added torrent to downloads " + game.title + "-" + game.torrent_id)
 		console.log("Files:")
 		torrent.files.forEach(file => {
 			console.log(file.path)
@@ -116,6 +110,14 @@ async function downloadTorrent(game) {
 		let progressReported = true
 		let lastDate = new Date().getTime()
 		let lastBytes = 0
+		
+		torrent.on("ready", () => {
+			console.log("Torrent ready " + game.title)
+		})
+		
+		torrent.on("error", (err) => {
+			throw new Error(err)
+		})
 		
 		torrent.on("download", async (bytes) => {
 			progressReported = false
@@ -151,6 +153,8 @@ async function downloadTorrent(game) {
 				await new Promise(resolve => setTimeout(resolve, 1000))
 			}
 			
+			console.log("Done with progress, starting to extract...")
+			
 			game.downloading = false
 			
 			_.remove(activeDownloads, (id) => {
@@ -173,7 +177,7 @@ async function downloadTorrent(game) {
 			
 			const gameFile = path.join(gameDir, game.torrent_id + "." + ext)
 			
-			await fs.promises.rename(files[0], gameFile)
+			await fs.promises.rename("" + files[0], gameFile)
 			let versionDir = path.join(gameDir, "" + game.torrent_id)
 			if (!fs.existsSync(versionDir)) {
 				fs.mkdirSync(versionDir)
@@ -275,8 +279,6 @@ function updateProgress(id, progress, type) {
 
 module.exports = {
 	installGame,
-	downloadTorrent,
-	deleteTorrent,
 	deleteGame,
 	getInstalledGames,
 	startDownloads,

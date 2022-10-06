@@ -1,5 +1,4 @@
 // noinspection TypeScriptUMDGlobal
-
 const login = document.getElementById("login-button")
 const loginForm = document.getElementById("login-form")
 const loginOverlay = document.getElementById("overlay-bg-login")
@@ -301,5 +300,15 @@ login.addEventListener("click", async (e) => {
 openFolder.addEventListener("click", async (e) => {
 	e.preventDefault()
 	
-	window.manager.openPath(await window.manager.getGameFolder(currentGame.id))
+	window.manager.openPath(await window.manager.getGameFolder(currentGame))
 })
+
+async function checkForUpdates() {
+	do {
+		const updates = await window.manager.checkUpdates()
+		console.log("Updates: ", updates)
+		await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 5))
+	} while (window.manager.getSettings()["auto_update"])
+}
+
+checkForUpdates().then(r => console.log("done checking for updates"))
