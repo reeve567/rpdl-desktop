@@ -152,8 +152,9 @@ app.whenReady().then(() => {
 				}
 				
 				while (!stop) {
-					await new Promise(r => setTimeout(r, 1000))
-					timeData[id][torrent_id] += 1
+					await new Promise(r => setTimeout(r, 5000))
+					timeData[id][torrent_id] += 5
+					timeData[id]["last_played"] = _.now()
 				}
 			})
 			
