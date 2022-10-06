@@ -198,13 +198,13 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("download-cover", async (event, game) => {
-		const coverPathPNG = path.join(tm.gamesPath, "" + game.id, "cover.jpg")
-		const coverPathJPG = path.join(tm.gamesPath, "" + game.id, "cover.png")
+		const coverPathPNG = path.join(tm.gamesPath, "" + game.thread_id, "cover.jpg")
+		const coverPathJPG = path.join(tm.gamesPath, "" + game.thread_id, "cover.png")
 		let base64
 		let coverPath
 		
 		if (!fs.existsSync(coverPathPNG) || !fs.existsSync(coverPathJPG)) {
-			const html = await rp("https://f95zone.to/threads/" + game.id + "/")
+			const html = await rp("https://f95zone.to/threads/" + game.thread_id + "/")
 			const regex = /src="([^"]*)\/thumb([^"]*)"/g
 			
 			const res = regex.exec(html)

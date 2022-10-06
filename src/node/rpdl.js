@@ -6,7 +6,7 @@ const _ = require("lodash")
 
 const regExp = {
 	markdown: /(?<=\[(?<linkName>.{1,30})\] ?\()(?<link>[^\n\r)]+)/g,
-	threadID: /\d+\/?$/,
+	threadID: /(?<=[./])(\d+)(?=\/|$)/,
 	searchID: /(?<=\/)\d+(?=\/)/,
 	links: /<a href="([^"]*)">/g
 }
