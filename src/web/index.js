@@ -18,6 +18,7 @@ const mainContent = document.getElementById("main-content")
 const gameTitle = document.getElementById("game-title")
 const gameVersion = document.getElementById("game-version")
 const tagDisplay = document.getElementById("tags")
+const coverDisplay = document.getElementById("cover")
 const descriptionDisplay = document.getElementById("description")
 const linksDisplay = document.getElementById("links")
 let installButton = document.getElementById("install-current")
@@ -135,6 +136,13 @@ async function openGame(game) {
 	})
 	
 	linksDisplay.innerHTML = ""
+	coverDisplay.src = ""
+	coverDisplay.style.display = "none"
+	
+	window.manager.downloadCover(game).then((base64) => {
+		coverDisplay.src = base64
+		coverDisplay.style.display = "block"
+	})
 	
 	_.forIn(game.links, (link, key) => {
 		linksDisplay.innerHTML += getLink(key)

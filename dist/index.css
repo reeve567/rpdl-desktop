@@ -607,6 +607,16 @@ video {
   margin-bottom: 0.25rem;
 }
 
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.my-3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -634,6 +644,10 @@ video {
 
 .grid {
   display: grid;
+}
+
+.hidden {
+  display: none;
 }
 
 .h-full {
@@ -1092,6 +1106,11 @@ video {
 
 #no-selected {
   margin-top: 25%;
+}
+
+#cover {
+  height: 25vh;
+  width: auto;
 }
 
 .margin-center {

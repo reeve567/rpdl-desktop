@@ -75,6 +75,11 @@
     margin-top: 25%;
 }
 
+#cover {
+    height: 25vh;
+    width: auto;
+}
+
 .margin-center {
     margin: 0 auto;
 }

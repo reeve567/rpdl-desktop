@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta content="default-src 'self'; script-src 'self'" http-equiv="Content-Security-Policy">
+	<meta content="img-src 'self' data:; default-src 'self'; script-src 'self'" http-equiv="Content-Security-Policy">
 	<title>rpdl manager</title>
 	<link href="../dist/index.css" rel="stylesheet" type="text/css">
 </head>
@@ -97,6 +97,7 @@
 					<li class="text-gray-400 border-dotted border-2 border-gray-500 px-1 mx-1 my-1">${tag}</li>
 					<li class="text-gray-400 border-dotted border-2 border-gray-300 px-1 mx-1 my-1">${tag}</li>
 				</ul>
+				<img class="block mx-auto my-3 hidden" id="cover" src="" alt="cover">
 				<p class="text-gray-400 text-center" id="description">desc</p>
 				<ul class="text-center flex justify-center flex-wrap align-middle" id="links">
 					<!-- This is all the links for the game like patreon and f95zone -->

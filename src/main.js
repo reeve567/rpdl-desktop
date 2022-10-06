@@ -8,9 +8,11 @@ const fs = require("fs")
 const rpdl = require("./node/rpdl.js")
 const tm = require("./node/torrentManagement.js")
 const bent = require("bent")
+const rp = require("request-promise")
 const childProcess = require("child_process")
 
 const json = bent("json", "GET")
+const buffer = bent("buffer", "GET")
 const settings = require("./settings.json")
 const _ = require("./web/lodash");
 const timeDataPath = path.join("./playtime.json")
@@ -155,6 +157,7 @@ app.whenReady().then(() => {
 					await new Promise(r => setTimeout(r, 5000))
 					timeData[id][torrent_id] += 5
 					timeData[id]["last_played"] = _.now()
+					
 					fs.writeFileSync(timeDataPath, JSON.stringify(timeData), {
 						encoding: "utf8"
 					})
@@ -192,6 +195,49 @@ app.whenReady().then(() => {
 	
 	ipcMain.handle("get-settings", (event) => {
 		return settings
+	})
+	
+	ipcMain.handle("download-cover", async (event, game) => {
+		const coverPathPNG = path.join(tm.gamesPath, "" + game.id, "cover.jpg")
+		const coverPathJPG = path.join(tm.gamesPath, "" + game.id, "cover.png")
+		let base64
+		let coverPath
+		
+		if (!fs.existsSync(coverPathPNG) || !fs.existsSync(coverPathJPG)) {
+			const html = await rp("https://f95zone.to/threads/" + game.id + "/")
+			const regex = /src="([^"]*)\/thumb([^"]*)"/g
+			
+			const res = regex.exec(html)
+			
+			const link = res[1] + res[2]
+			
+			if (!fs.existsSync(tm.gamesPath)) {
+				fs.mkdirSync(tm.gamesPath)
+			}
+			
+			let ext = link.split(".").pop()
+			
+			if (ext === "png" || ext === "jpg") {
+				coverPath = eval(`coverPath${ext.toUpperCase()}`)
+			} else {
+				console.error("Unknown cover extension: " + ext)
+				return
+			}
+			
+			const image = await buffer(link)
+			
+			fs.writeFileSync(coverPath, image)
+			
+		} else {
+			if (fs.existsSync(coverPathPNG)) {
+				coverPath = coverPathPNG
+			} else if (fs.existsSync(coverPathJPG)) {
+				coverPath = coverPathJPG
+			}
+		}
+		
+		base64 = (await fs.promises.readFile(coverPath)).toString("base64")
+		return `data:image/${coverPath.split(".").pop()};base64,${base64}`
 	})
 	
 	tm.getInstalledGames().then(r => {

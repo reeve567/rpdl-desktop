@@ -19,6 +19,7 @@
     "node-7z": "^3.0.0",
     "node-fetch": "^3.2.10",
     "parse-torrent": "^9.1.5",
+    "request-promise": "^4.2.6",
     "request-promise-native": "^1.0.9",
     "webtorrent": "^1.8.26"
   },
