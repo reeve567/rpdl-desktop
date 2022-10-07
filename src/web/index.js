@@ -175,7 +175,6 @@ async function openGame(game) {
 		uninstallButton.addEventListener("click", () => {
 			window.manager.remove(game).then(() => {
 				updateInstalled()
-				closeGame()
 			})
 		})
 		
@@ -189,8 +188,8 @@ async function openGame(game) {
 				
 				if (data.progress >= 1) {
 					setTimeout(() => {
-						openGame(game)
-					}, 2000)
+						closeGame()
+					}, 4000)
 				}
 			}
 		}
