@@ -140,8 +140,10 @@ async function openGame(game) {
 	coverDisplay.style.display = "none"
 	
 	window.manager.downloadCover(game).then((base64) => {
-		coverDisplay.src = base64
-		coverDisplay.style.display = "block"
+		if (game.id === currentGame.id) {
+			coverDisplay.src = base64
+			coverDisplay.style.display = "block"
+		}
 	})
 	
 	_.forIn(game.links, (link, key) => {

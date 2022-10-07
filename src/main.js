@@ -205,11 +205,13 @@ app.whenReady().then(() => {
 		
 		if (!fs.existsSync(coverPathPNG) && !fs.existsSync(coverPathJPG)) {
 			const html = await rp("https://f95zone.to/threads/" + game.thread_id + "/")
-			const regex = /src="([^"]*)\/thumb([^"]*)"/g
+			const regex = /src="(https:\/\/attachments)([^"]*)"/g
 			
 			const res = regex.exec(html)
 			
 			const link = res[1] + res[2]
+			
+			link.replace("/thumb", "")
 			
 			if (!fs.existsSync(tm.gamesPath)) {
 				fs.mkdirSync(tm.gamesPath)
