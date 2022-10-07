@@ -198,8 +198,8 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("download-cover", async (event, game) => {
-		const coverPathPNG = path.join(tm.gamesPath, "" + game.thread_id, "cover.jpg")
-		const coverPathJPG = path.join(tm.gamesPath, "" + game.thread_id, "cover.png")
+		const coverPathPNG = path.join(tm.gamesPath, "" + game.id, "cover.jpg")
+		const coverPathJPG = path.join(tm.gamesPath, "" + game.id, "cover.png")
 		let base64
 		let coverPath
 		
@@ -215,8 +215,8 @@ app.whenReady().then(() => {
 				fs.mkdirSync(tm.gamesPath)
 			}
 			
-			if (!fs.existsSync(path.join(tm.gamesPath, "" + game.thread_id))) {
-				fs.mkdirSync(path.join(tm.gamesPath, "" + game.thread_id))
+			if (!fs.existsSync(path.join(tm.gamesPath, "" + game.id))) {
+				fs.mkdirSync(path.join(tm.gamesPath, "" + game.id))
 			}
 			
 			let ext = link.split(".").pop()
