@@ -209,9 +209,9 @@ app.whenReady().then(() => {
 			
 			const res = regex.exec(html)
 			
-			const link = res[1] + res[2]
+			let link = res[1] + res[2]
 			
-			link.replace("/thumb", "")
+			link = link.replace("/thumb", "")
 			
 			if (!fs.existsSync(tm.gamesPath)) {
 				fs.mkdirSync(tm.gamesPath)
