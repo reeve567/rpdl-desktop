@@ -224,7 +224,7 @@ app.whenReady().then(() => {
 			
 			let ext = link.split(".").pop()
 			
-			if (ext === "png" || ext === "jpg") {
+			if (ext === "png" || ext === "jpg" || ext === "gif") {
 				coverPath = eval(`coverPath${ext.toUpperCase()}`)
 			} else {
 				console.error("Unknown cover extension: " + ext)
