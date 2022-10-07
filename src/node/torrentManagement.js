@@ -234,27 +234,29 @@ async function downloadTorrent(game) {
 
 async function deleteTorrent(game) {
 	try {
-		await fs.promises.unlink(path.join(torrentFilesPath, game.id + "-" + game.torrent_id + ".torrent"))
-	} catch (e) {
-	}
-	updateProgress(game.id, .5, 'u')
-	try {
-		await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".7z"))
+		await fs.promises.rm(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".7z"))
 	} catch (e) {
 	}
 	
 	try {
-		await fs.promises.unlink(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".zip"))
+		await fs.promises.rm(path.join(torrentDownloadsPath, game.id, game.torrent_id + ".zip"))
 	} catch (e) {
 	}
-	updateProgress(game.id, 1, 'u')
 }
 
 async function deleteGame(game) {
 	if (game != null) {
 		updateProgress(game.id, 0, 'u')
-		_.remove(installedGames, {id: game.id})
+		await fs.promises.rm(path.join(gamesPath, "" + game.id, "" + game.torrent_id), {
+			recursive: true,
+			force: true
+		})
 		updateProgress(game.id, 25, 'u')
+		_.remove(installedGames, function (g) {
+			return g.id === game.id
+		})
+		await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
+		updateProgress(game.id, 50, 'u')
 		await deleteTorrent(game)
 	}
 }

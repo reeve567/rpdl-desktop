@@ -173,9 +173,10 @@ async function openGame(game) {
 		uninstallButton.replaceWith(clone)
 		uninstallButton = clone
 		uninstallButton.addEventListener("click", () => {
-			window.manager.remove(game)
-			updateInstalled()
-			closeGame()
+			window.manager.remove(game).then(() => {
+				updateInstalled()
+				closeGame()
+			})
 		})
 		
 		updateUninstallBar = data => {
