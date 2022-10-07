@@ -203,7 +203,7 @@ app.whenReady().then(() => {
 		let base64
 		let coverPath
 		
-		if (!fs.existsSync(coverPathPNG) || !fs.existsSync(coverPathJPG)) {
+		if (!fs.existsSync(coverPathPNG) && !fs.existsSync(coverPathJPG)) {
 			const html = await rp("https://f95zone.to/threads/" + game.thread_id + "/")
 			const regex = /src="([^"]*)\/thumb([^"]*)"/g
 			
@@ -228,7 +228,7 @@ app.whenReady().then(() => {
 				return
 			}
 			
-			const image = await buffer(link)
+			const image = await rp(link, { encoding: null })
 			
 			fs.writeFileSync(coverPath, image)
 			
