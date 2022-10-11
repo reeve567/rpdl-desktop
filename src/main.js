@@ -98,7 +98,7 @@ app.whenReady().then(() => {
 		
 		if (settings.auto_update) {
 			for (const update of updates) {
-				const newVersion = await rp(settings.backend_url + "/getFullGameInfo?game=" + update.id)
+				const newVersion = JSON.parse(await rp(settings.backend_url + "/getFullGameInfo?game=" + update.id))
 				
 				await tm.installGame(newVersion, await tm.getInstalledGame(update.id))
 			}
