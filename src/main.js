@@ -94,7 +94,16 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("check-for-updates", async (event) => {
-		return await rpdl.findUpdates(await tm.getInstalledGames())
+		const updates = await rpdl.findUpdates(await tm.getInstalledGames())
+		
+		if (settings.auto_update) {
+			for (const update of updates) {
+				const newVersion = await rp(settings.backend_url + "/getFullGameInfo?game=" + update.id)
+				
+				await tm.installGame(newVersion, await tm.getInstalledGame(update.id))
+			}
+		}
+		return updates
 	})
 	
 	ipcMain.handle("login", async (event, username, password, refreshToken) => {
@@ -111,10 +120,6 @@ app.whenReady().then(() => {
 	
 	ipcMain.handle("resume-downloads", async (event) => {
 		await tm.startDownloads()
-	})
-	
-	ipcMain.handle("get-f95-info", async (event, id) => {
-		return await json(settings["backend_url"] + "/getF95Info?game=" + id)
 	})
 	
 	ipcMain.handle("parse-search", (event, query) => {

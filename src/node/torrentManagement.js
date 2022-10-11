@@ -32,6 +32,12 @@ async function startDownloads() {
 	})
 }
 
+async function getInstalledGame(id) {
+	return _.find(installedGames, function (game) {
+		return game.id === id
+	})
+}
+
 async function installGame(game, old) {
 	if (!fs.existsSync(torrentDownloadsPath)) {
 		fs.mkdirSync(torrentDownloadsPath)
@@ -284,6 +290,7 @@ module.exports = {
 	installGame,
 	deleteGame,
 	getInstalledGames,
+	getInstalledGame,
 	startDownloads,
 	gamesPath
 }
