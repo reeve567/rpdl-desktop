@@ -291,17 +291,19 @@ async function buildLibrary() {
 				withFileTypes: true
 			})
 			
-			let folders = _.filter(files, (file) => {
+			let folders = _.filter(files, (file, two) => {
 				return file.isDirectory()
 			})
 			
 			if (folders.length === 1) {
 				game.torrent_id = parseInt(folders[0].name)
+			} else {
+				console.log("Game " + game.id + ` has too many/little versions (${folders.length})`)
 			}
-		} else {
-			console.log("Game " + game.id + " has too many/little versions")
 		}
 	}
+	
+	await fs.promises.writeFile(installedGamesPath, JSON.stringify(games))
 }
 
 function updateProgress(id, progress, type) {
