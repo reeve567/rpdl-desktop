@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('manager', {
 	onProgress: (callback) => ipcRenderer.on("progress", callback),
 	getSettings: () => ipcRenderer.invoke("get-settings"),
 	downloadCover: (game) => ipcRenderer.invoke("download-cover", game),
+	buildLibrary: () => ipcRenderer.invoke("build-library"),
 })
 
 window.addEventListener('DOMContentLoaded', async () => {

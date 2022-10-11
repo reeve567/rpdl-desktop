@@ -93,6 +93,10 @@ app.whenReady().then(() => {
 		return await tm.getInstalledGames()
 	})
 	
+	ipcMain.handle("build-library", async (event) => {
+		return await tm.buildLibrary()
+	})
+	
 	ipcMain.handle("check-for-updates", async (event) => {
 		const updates = await rpdl.findUpdates(await tm.getInstalledGames())
 		

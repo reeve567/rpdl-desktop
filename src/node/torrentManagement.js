@@ -276,6 +276,34 @@ async function getInstalledGames() {
 	}
 }
 
+async function buildLibrary() {
+	let games = await getInstalledGames()
+	
+	for (const game of games) {
+		let gameDir = path.join(gamesPath, "" + game.id)
+		if (!fs.existsSync(gameDir)) {
+			fs.mkdirSync(gameDir)
+		}
+		
+		let versionDir = path.join(gameDir, "" + game.torrent_id)
+		if (!fs.existsSync(versionDir)) {
+			let files = await fs.promises.readdir(gameDir, {
+				withFileTypes: true
+			})
+			
+			let folders = _.filter(files, (file) => {
+				return file.isDirectory()
+			})
+			
+			if (folders.length === 1) {
+				game.torrent_id = parseInt(folders[0].name)
+			}
+		} else {
+			console.log("Game " + game.id + " has too many/little versions")
+		}
+	}
+}
+
 function updateProgress(id, progress, type) {
 	const main = require("../main.js")
 	
@@ -292,5 +320,6 @@ module.exports = {
 	getInstalledGames,
 	getInstalledGame,
 	startDownloads,
+	buildLibrary,
 	gamesPath
 }
