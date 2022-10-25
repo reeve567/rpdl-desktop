@@ -82,7 +82,7 @@ async function downloadTorrent(game) {
 	})
 	
 	if (response.data.trackers[0].indexOf("announce/") === -1) {
-		response = await getBuffer(gameInfoURL, null, {
+		response = await getJSON(gameInfoURL, null, {
 			"authorization": "Bearer " + (await rpdl.login(null, null, true))
 		})
 		
