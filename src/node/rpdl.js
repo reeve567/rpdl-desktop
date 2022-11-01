@@ -64,15 +64,15 @@ async function tryLogin(loginData) {
 
 async function login(username, password, refreshToken) {
 	if (user == null || refreshToken) {
-		if (username == null || password == null) {
+		if ((username == null || password == null) && !refreshToken) {
 			user = JSON.parse(await fs.promises.readFile(userFile, {encoding: "utf8"}))
 			
 			if (user !== null && user.token !== undefined) {
 				return user.token
 			}
 			
-			console.log("error?")
-			return null
+			username = user.username
+			password = user.password
 		}
 		
 		const loginData = {
