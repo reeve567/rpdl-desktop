@@ -12,17 +12,20 @@ let gamesPath = tm.gamesPath
 
 function moveGame(game, result) {
 	if (game.id !== result.id) {
-		console.log("Game ID mismatch")
+		console.log("Game ID mismatch, fixing")
 		
 		let oldPath = path.join(gamesPath, "" + game.id)
 		let newPath = path.join(gamesPath, "" + result.id)
 		
+		if (!fs.existsSync(oldPath)) {
+			console.log("Old path doesn't exist, skipping")
+			return
+		}
+		
 		fs.renameSync(oldPath, newPath)
-		
-		game.id = result.id
-		
-		tm.updateGameInfo(result, game)
 	}
+	
+	tm.saveGames()
 }
 
 async function migrate() {

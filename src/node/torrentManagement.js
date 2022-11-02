@@ -338,5 +338,6 @@ module.exports = {
 	startDownloads,
 	buildLibrary,
 	gamesPath,
-	updateGameInfo
+	updateGameInfo,
+	saveGames,
 }
