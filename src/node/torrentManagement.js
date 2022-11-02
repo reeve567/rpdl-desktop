@@ -278,6 +278,7 @@ async function deleteGame(game) {
 		await saveGames()
 		updateProgress(game.id, .50, 'u')
 		await deleteTorrent(game)
+		updateProgress(game.id, 1, 'u')
 	}
 }
 
