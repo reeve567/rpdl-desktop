@@ -9,6 +9,15 @@ const bent = require("bent")
 const json = bent("json", "GET")
 
 let gamesPath = tm.gamesPath
+const timeDataPath = path.join("./playtime.json")
+
+let timeData
+
+if (fs.existsSync(timeDataPath)) {
+	timeData = JSON.parse(fs.readFileSync(timeDataPath, {encoding: "utf8"}))
+} else {
+	timeData = {}
+}
 
 function moveGame(game, result) {
 	if (game.id !== result.id) {
@@ -19,6 +28,9 @@ function moveGame(game, result) {
 		
 		if (!fs.existsSync(oldPath)) {
 			console.log("Old path (" + oldPath + ") doesn't exist, skipping")
+			
+			timeData[result.id] = timeData[game.id]
+			delete timeData[game.id]
 			
 			tm.updateGameInfo(result.id, game.id)
 			return
