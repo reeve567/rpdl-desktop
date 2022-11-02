@@ -30,8 +30,6 @@ migrate().then(() => {
 	console.log("Done!")
 })
 
-
-while (true) {
-	
-}
-
+setInterval(() => {
+	console.log("Waiting for migration to finish...")
+}, 10000)
