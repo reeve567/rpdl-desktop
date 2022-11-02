@@ -257,12 +257,12 @@ async function deleteGame(game) {
 			recursive: true,
 			force: true
 		})
-		updateProgress(game.id, 25, 'u')
+		updateProgress(game.id, .25, 'u')
 		_.remove(installedGames, function (g) {
 			return g.id === game.id
 		})
 		await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
-		updateProgress(game.id, 50, 'u')
+		updateProgress(game.id, .50, 'u')
 		await deleteTorrent(game)
 	}
 }
