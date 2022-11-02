@@ -10,6 +10,7 @@ const tm = require("./node/torrentManagement.js")
 const bent = require("bent")
 const rp = require("request-promise")
 const childProcess = require("child_process")
+const search = require("./search.js")
 
 const json = bent("json", "GET")
 const buffer = bent("buffer", "GET")
@@ -48,47 +49,7 @@ module.exports = {
 	getMainWindow
 }
 
-function parseSearch(query) {
-	let and_tags_string = query.substring(query.indexOf("[") + 1, query.indexOf("]"))
-	let and_tags = and_tags_string.split(",").map((tag) => {
-		
-		return tag.trim().toLowerCase()
-	}).filter((tag) => {
-		return tag.length > 0
-	})
-	
-	let or_tags_string = query.substring(query.indexOf("{") + 1, query.indexOf("}"))
-	let or_tags = or_tags_string.split(",").map((tag) => {
-		return tag.trim().toLowerCase()
-	}).filter((tag) => {
-		return tag.length > 0
-	})
-	
-	let not_tags_string = query.substring(query.indexOf("<") + 1, query.indexOf(">"))
-	let not_tags = not_tags_string.split(",").map((tag) => {
-		return tag.trim().toLowerCase()
-	}).filter((tag) => {
-		return tag.length > 0
-	})
-	
-	let engine = query.substring(query.indexOf("(") + 1, query.indexOf(")"))
-	
-	let search_term = querySearch.exec(query)[0]
-	
-	return {
-		and_tags: and_tags,
-		or_tags: or_tags,
-		not_tags: not_tags,
-		engine: engine.toLowerCase(),
-		query: search_term.replaceAll(/[^a-zA-Z0-9-. ]/g, "")
-	}
-}
-
-app.commandLine.appendSwitch("trace-warnings", "true")
-
 app.whenReady().then(() => {
-	app.commandLine.appendSwitch("trace-warnings", "true")
-	
 	ipcMain.handle("get-installed-games", async (event) => {
 		return await tm.getInstalledGames()
 	})
@@ -131,7 +92,7 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("search", async (event, query) => {
-		let ret = parseSearch(query)
+		let ret = search.parseSearch(query)
 		
 		return await json(settings["backend_url"] + "/searchGames", ret)
 	})

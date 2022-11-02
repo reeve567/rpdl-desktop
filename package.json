@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "electron ./src/main.js --trace-warnings",
-    "tailwind": "npx tailwindcss -i ./src/index.css -o ./dist/index.css --watch"
+    "tailwind": "npx tailwindcss -i ./src/index.css -o ./dist/index.css --watch",
+    "migrate": "npm "
   },
   "dependencies": {
     "7zip-bin": "^5.2.0",
