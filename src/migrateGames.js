@@ -30,3 +30,8 @@ migrate().then(() => {
 	console.log("Done!")
 })
 
+
+while (true) {
+	
+}
+
