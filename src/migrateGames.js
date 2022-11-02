@@ -39,7 +39,6 @@ async function migrate() {
 		
 		
 		if (results.length > 1) {
-			console.log("Multiple results for game " + game.id)
 			let newResults = _.filter(results, (result) => {
 				return result.torrent_id === game.torrent_id
 			})
