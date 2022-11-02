@@ -27,12 +27,19 @@ function parseSearch(query) {
 	
 	let search_term = querySearch.exec(query)[0]
 	
+	let exact = false
+	
+	if (query.indexOf("*") === query.length - 1) {
+		exact = true
+	}
+	
 	return {
 		and_tags: and_tags,
 		or_tags: or_tags,
 		not_tags: not_tags,
 		engine: engine.toLowerCase(),
-		query: search_term.replaceAll(/[^a-zA-Z0-9-. ]/g, "")
+		query: search_term.replaceAll(/[^a-zA-Z0-9-. ]/g, ""),
+		exact: exact
 	}
 }
 

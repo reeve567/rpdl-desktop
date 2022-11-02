@@ -17,7 +17,7 @@ const activeDownloads = []
 let installedGames = null
 
 let torrentDownloadsPath = path.join("torrentDownloads")
-let installedGamesPath = path.join("installedGames.json")
+let installedGamesPath = path.join(__dirname, "../..", "installedGames.json")
 let gamesPath = settings["games_path"]
 
 async function startDownloads() {
@@ -36,6 +36,20 @@ async function getInstalledGame(id) {
 	return _.find(installedGames, function (game) {
 		return game.id === id
 	})
+}
+
+async function updateGameInfo(game, old) {
+	_.remove(installedGames, function (g) {
+		return g.id === old.id
+	})
+	
+	installedGames.push(game)
+	
+	await saveGames()
+}
+
+async function saveGames() {
+	await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
 }
 
 async function installGame(game, old) {
@@ -60,7 +74,7 @@ async function installGame(game, old) {
 	
 	installedGames.push(game)
 	
-	await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
+	await saveGames();
 	
 	if (game.new_tags !== undefined && game.new_tags.length > 0) {
 		game.tags.push(game.new_tags)
@@ -168,7 +182,7 @@ async function downloadTorrent(game) {
 				return id === game.id
 			})
 			
-			await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
+			await saveGames()
 			
 			let ext = files[0].split(".").pop()
 			
@@ -232,7 +246,7 @@ async function downloadTorrent(game) {
 				
 				await fs.promises.unlink(gameFile)
 				
-				await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
+				await saveGames()
 			})
 		})
 	})
@@ -261,7 +275,7 @@ async function deleteGame(game) {
 		_.remove(installedGames, function (g) {
 			return g.id === game.id
 		})
-		await fs.promises.writeFile(installedGamesPath, JSON.stringify(installedGames))
+		await saveGames()
 		updateProgress(game.id, .50, 'u')
 		await deleteTorrent(game)
 	}
@@ -323,5 +337,6 @@ module.exports = {
 	getInstalledGame,
 	startDownloads,
 	buildLibrary,
-	gamesPath
+	gamesPath,
+	updateGameInfo
 }

@@ -8,21 +8,49 @@ const bent = require("bent")
 
 const json = bent("json", "GET")
 
-let gamesPath = settings["games_path"]
+let gamesPath = tm.gamesPath
+
+function moveGame(game, result) {
+	if (game.id !== result.id) {
+		console.log("Game ID mismatch")
+		
+		let oldPath = path.join(gamesPath, "" + game.id)
+		let newPath = path.join(gamesPath, "" + result.id)
+		
+		fs.renameSync(oldPath, newPath)
+		
+		game.id = result.id
+		
+		tm.updateGameInfo(result, game)
+	}
+}
 
 async function migrate() {
 	const installedGames = await tm.getInstalledGames()
-	console.log(installedGames)
 	_.forEach(installedGames, async (game) => {
-		console.log("Migrating game " + game.id)
-		let query = game.name
+		let query = game.title
 		
-		let ret = search.parseSearch(query)
+		let ret = search.parseSearch(query + "*")
 		
 		let results = await json(settings["backend_url"] + "/searchGames", ret)
 		
-		console.log(results)
-		console.log("Done migrating game " + game.id)
+		
+		if (results.length > 1) {
+			console.log("Multiple results for game " + game.id)
+			let newResults = _.filter(results, (result) => {
+				return result.torrent_id === game.torrent_id
+			})
+			
+			if (newResults.length > 1) {
+				console.log("What?")
+			} else if (newResults.length === 0) {
+				console.log("Couldn't find game " + game.id + " with torrent ID " + game.torrent_id)
+			} else {
+				moveGame(game, newResults[0])
+			}
+		} else if (results.length === 1) {
+			moveGame(game, results[0])
+		}
 	})
 }
 
