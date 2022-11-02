@@ -88,7 +88,7 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("parse-search", (event, query) => {
-		return parseSearch(query)
+		return search.parseSearch(query)
 	})
 	
 	ipcMain.handle("search", async (event, query) => {
