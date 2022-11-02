@@ -18,7 +18,7 @@ function moveGame(game, result) {
 		let newPath = path.join(gamesPath, "" + result.id)
 		
 		if (!fs.existsSync(oldPath)) {
-			console.log("Old path doesn't exist, skipping")
+			console.log("Old path (" + oldPath + ") doesn't exist, skipping")
 			return
 		}
 		
