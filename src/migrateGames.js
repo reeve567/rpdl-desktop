@@ -19,13 +19,13 @@ function moveGame(game, result) {
 		
 		if (!fs.existsSync(oldPath)) {
 			console.log("Old path (" + oldPath + ") doesn't exist, skipping")
+			
+			tm.updateGameInfo(result.id, game.id)
 			return
 		}
 		
 		fs.renameSync(oldPath, newPath)
 	}
-	
-	tm.saveGames()
 }
 
 async function migrate() {
