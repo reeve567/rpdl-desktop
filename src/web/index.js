@@ -298,7 +298,7 @@ login.addEventListener("click", async (e) => {
 	const username = loginForm.username.value
 	const password = loginForm.password.value
 	
-	let result = await window.manager.login(username, password)
+	let result = await window.manager.login(username, password, false)
 	
 	if (result === null) {
 		// invalid login credentials
