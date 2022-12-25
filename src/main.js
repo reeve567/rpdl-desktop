@@ -168,13 +168,14 @@ app.whenReady().then(() => {
 	})
 	
 	ipcMain.handle("download-cover", async (event, game) => {
-		const coverPathPNG = path.join(tm.gamesPath, "" + game.id, "cover.jpg")
+		const coverPathJPG = path.join(tm.gamesPath, "" + game.id, "cover.jpg")
+		const coverPathJPEG = path.join(tm.gamesPath, "" + game.id, "cover.jpeg")
 		const coverPathGIF = path.join(tm.gamesPath, "" + game.id, "cover.gif")
-		const coverPathJPG = path.join(tm.gamesPath, "" + game.id, "cover.png")
+		const coverPathPNG = path.join(tm.gamesPath, "" + game.id, "cover.png")
 		let base64
 		let coverPath
 		
-		if (!fs.existsSync(coverPathPNG) && !fs.existsSync(coverPathJPG) && !fs.existsSync(coverPathGIF)) {
+		if (!fs.existsSync(coverPathJPG) && !fs.existsSync(coverPathPNG) && !fs.existsSync(coverPathGIF) && !fs.existsSync(coverPathJPEG)) {
 			const html = await rp("https://f95zone.to/threads/" + game.thread_id + "/")
 			const regex = /src="(https:\/\/attachments|https:\/\/media.giphy)([^"]*)"/g
 			
@@ -194,7 +195,7 @@ app.whenReady().then(() => {
 			
 			let ext = link.split(".").pop()
 			
-			if (ext === "png" || ext === "jpg" || ext === "gif") {
+			if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "gif") {
 				coverPath = eval(`coverPath${ext.toUpperCase()}`)
 			} else {
 				console.error("Unknown cover extension: " + ext)
@@ -206,14 +207,16 @@ app.whenReady().then(() => {
 			fs.writeFileSync(coverPath, image)
 			
 		} else {
-			if (fs.existsSync(coverPathPNG)) {
-				coverPath = coverPathPNG
-			} else if (fs.existsSync(coverPathJPG)) {
+			if (fs.existsSync(coverPathJPG)) {
 				coverPath = coverPathJPG
+			} else if (fs.existsSync(coverPathPNG)) {
+				coverPath = coverPathPNG
 			} else if (fs.existsSync(coverPathGIF)) {
 				coverPath = coverPathGIF
+			} else if (fs.existsSync(coverPathJPEG)) {
+				coverPath = coverPathJPEG
 			}
-		}
+ 		}
 		
 		base64 = (await fs.promises.readFile(coverPath)).toString("base64")
 		return `data:image/${coverPath.split(".").pop()};base64,${base64}`
